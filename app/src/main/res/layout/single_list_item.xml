@@ -5,6 +5,23 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/title"
         android:text="Title"
-        android:textSize="25dp"/>
+        android:textSize="30dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginLeft="80dp"
+        android:layout_alignTop="@+id/foodpicture"
+    />
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/foodpicture"
+        android:src="@drawable/foodpic"
+        android:layout_marginRight="700dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="24dp" />
+
 </RelativeLayout>
