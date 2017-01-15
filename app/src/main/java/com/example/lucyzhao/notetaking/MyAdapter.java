@@ -46,17 +46,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         viewHolder.title.setText(foodList.get(position).getTitle());
         viewHolder.foodImage.setImageResource(R.drawable.foodpic);
-        /*
-        View.OnClickListener listener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v){
-                Intent intent = new Intent(viewHolder.context, RecipePageActivity.class);
-                String message = editText.getText().toString();
-                intent.putExtra(EXTRA_MESSAGE, message);
-                startActivity(intent);
-            }
-        };
-        viewHolder.itemView.setOnClickListener(listener); */
 
     }
 
