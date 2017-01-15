@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -60,9 +61,9 @@ public class MainActivity extends AppCompatActivity {
         MyAdapter mAdapter = new MyAdapter(foodList);
         // 4. set adapter
         recyclerView.setAdapter(mAdapter);
-        // 5. set item animator to DefaultAnimator
-     //   recyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        recyclerView.addItemDecoration(new DividerItemDecoration(this,
+                DividerItemDecoration.VERTICAL));
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
