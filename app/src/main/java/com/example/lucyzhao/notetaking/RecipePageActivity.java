@@ -43,21 +43,7 @@ public class RecipePageActivity extends AppCompatActivity {
 
         editText = (EditText) findViewById(R.id.user_input);
         //read information saved in internal storage and displays it
-        String savedInfo;
-        try {
-            FileInputStream fis = openFileInput(file_name);
-            BufferedReader bufferedReader
-                    = new BufferedReader(new InputStreamReader(fis));
-            StringBuffer stringBuffer = new StringBuffer();
-            while((savedInfo = bufferedReader.readLine()) != null ) {
-                stringBuffer.append(savedInfo + "\n");
-            }
-            editText.setText(stringBuffer.toString());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        displayInfo();
     }
 
     /**
@@ -73,6 +59,24 @@ public class RecipePageActivity extends AppCompatActivity {
             fos.close();
             //displays a message saying information saved
             Toast.makeText(getApplicationContext(),"input saved",Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void displayInfo(){
+        String savedInfo;
+        try {
+            FileInputStream fis = openFileInput(file_name);
+            BufferedReader bufferedReader
+                    = new BufferedReader(new InputStreamReader(fis));
+            StringBuffer stringBuffer = new StringBuffer();
+            while((savedInfo = bufferedReader.readLine()) != null ) {
+                stringBuffer.append(savedInfo + "\n");
+            }
+            editText.setText(stringBuffer.toString());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
