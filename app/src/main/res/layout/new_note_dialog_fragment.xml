@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <EditText
@@ -13,4 +13,22 @@
         android:fontFamily="casual"
         android:hint="recipe name" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/ok_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OK"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/new_note_name" />
+
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CANCEL"
+        android:layout_marginStart="15dp"
+        android:layout_below="@+id/new_note_name"
+        android:layout_toEndOf="@+id/ok_button"
+        android:layout_alignBottom="@+id/ok_button"/>
+
+</RelativeLayout>
