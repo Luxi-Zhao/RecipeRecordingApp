@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
@@ -74,9 +76,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         initializeFoodList();
-        for(Food food : foodList){
+   /*     for(Food food : foodList){
             System.out.println(food.getTitle());
-        }
+        } */
 
         RecyclerView recyclerView;
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -163,13 +165,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class NewNoteDialogFragment extends DialogFragment {
-        static final int REQUEST_IMAGE_CAPTURE = 1;
         static final int MY_PERMISSIONS_REQUEST_CAMERA = 5656;
         static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 5757;
-        private View textEntryView;
+        private View fragmentView;
 
-        Uri imageUri;
-        final int TAKE_PICTURE = 115;
+        private Uri imageUri;
+        static final int TAKE_PICTURE = 115;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -180,16 +181,16 @@ public class MainActivity extends AppCompatActivity {
 
             // Inflate and set the layout for the dialog; textEntryView is the view of the dialog
             // Pass null as the parent view because its going in the dialog layout
-            textEntryView = inflater.inflate(R.layout.new_note_dialog_fragment, null);
-            builder.setView(textEntryView);
+            fragmentView = inflater.inflate(R.layout.new_note_dialog_fragment, null);
+            builder.setView(fragmentView);
 
-            Button okButton = (Button) textEntryView.findViewById(R.id.ok_button);
-            Button cancelButton = (Button) textEntryView.findViewById(R.id.cancel_button);
+            Button okButton = (Button) fragmentView.findViewById(R.id.ok_button);
+            Button cancelButton = (Button) fragmentView.findViewById(R.id.cancel_button);
             okButton.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view){
                     ((MainActivity) getActivity()).newNoteName
-                            = (EditText) textEntryView.findViewById(R.id.new_note_name);
+                            = (EditText) fragmentView.findViewById(R.id.new_note_name);
                     //transfer control back to the Fragment's host
                     if(!((MainActivity) getActivity()).onDialogPositiveClick()) {
                         dismiss();
@@ -202,36 +203,25 @@ public class MainActivity extends AppCompatActivity {
                     dismiss();
                 }
             });
-          //  requestUserPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
             tryTakingPicture();
 
             return builder.create();
         }
 
         private void tryTakingPicture(){
-            FloatingActionButton cameraButton = (FloatingActionButton) textEntryView.findViewById(R.id.camera_button);
+            FloatingActionButton cameraButton = (FloatingActionButton) fragmentView.findViewById(R.id.camera_button);
             cameraButton.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view){
-              // doTakingPicture();
+                    //this will request camera permission, which will try to take a picture
                     requestUserPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-
-
-                   // doTakingPicture();
                 }
             });
         }
 
         private void doTakingPicture(){
-            /*     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        if (takePictureIntent
-                            .resolveActivity((getActivity()).getPackageManager()) != null) {
-                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                    }  */
-
-
-            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-            File photoFile = new File(Environment.getExternalStorageDirectory(),  "photo.png");
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            //File photoFile = new File(Environment.getExternalStorageDirectory(),  "photo.png");
             //imageUri = Uri.fromFile(photoFile);
             createUri();
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -246,6 +236,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 ContentValues values = new ContentValues(1);
                 values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
+                //insert values into a table at EXTERNAL_CONTENT_URI and get the URI of the newly
+                //created row
                 imageUri = getActivity().getContentResolver()
                         .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 
@@ -254,15 +246,34 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * Handling result from startActivityForResult
+         * @param requestCode
+         * @param resultCode
+         * @param data
+         */
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            Log.v("tag","ENTERING ON ACTIVITY RESULT");
             super.onActivityResult(requestCode, resultCode, data);
             switch (requestCode) {
                 case TAKE_PICTURE:
                     if (resultCode == Activity.RESULT_OK) {
-                        Uri selectedImageUri = imageUri;
-                        //Do what ever you want
+                        usePicture();
                     }
+            }
+        }
+
+        private void usePicture(){
+            Uri selectedImageUri = imageUri;
+            try {
+                Log.v("tag","GETTING PICTURE");
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+                        getContext().getContentResolver(), selectedImageUri);
+                ImageView picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
+                picPreview.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
 
