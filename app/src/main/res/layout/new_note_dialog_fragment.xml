@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <EditText
@@ -31,4 +32,45 @@
         android:layout_toEndOf="@+id/ok_button"
         android:layout_alignBottom="@+id/ok_button"/>
 
-</RelativeLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:srcCompat="@android:drawable/ic_menu_camera"
+        android:layout_alignTop="@+id/new_note_name"
+        android:layout_alignEnd="@+id/cancel_button"
+        android:layout_marginEnd="21dp"
+        android:id="@+id/camera_button" />
+
+
+    <!--   <ImageView
+         android:id="@+id/camera_image"
+         android:layout_width="50dp"
+         android:layout_height="50dp"
+         android:layout_toEndOf="@+id/cancel_button"
+         android:layout_marginStart="17dp" />
+
+     <TextView
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="Take a picture"
+         android:fontFamily="casual"
+         android:layout_marginStart="19dp"
+         android:layout_marginBottom="14dp"
+         android:layout_above="@+id/camera_button"
+         android:layout_alignStart="@+id/new_note_name" />
+
+     <android.support.design.widget.FloatingActionButton
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:clickable="true"
+         app:fabSize="mini"
+         app:srcCompat="@android:drawable/ic_menu_camera"
+         android:id="@+id/camera_button"
+         android:layout_above="@+id/cancel_button"
+         android:layout_alignEnd="@+id/cancel_button"
+         android:layout_marginBottom="38dp" /> -->
+
+
+ </RelativeLayout>
