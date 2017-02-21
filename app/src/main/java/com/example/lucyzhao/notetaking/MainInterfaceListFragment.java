@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
@@ -33,15 +34,19 @@ public class MainInterfaceListFragment extends ListFragment {
         super.onActivityCreated(savedInstanceState);
 
         foodList = new ArrayList<>();
+        foodList.add(new Food("food1"));
+    //    String[] values = {"one","two","three","four","five","six","seven","eight"
+      //          ,"six","seven","eight","six","seven","eight"};
         ArrayAdapter<Food> adapter;
         adapter = new ArrayAdapter<>(getActivity(),
                             R.layout.single_list_item,foodList);
+     //   ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),android.R.layout.simple_list_item_1, values);
 
         setListAdapter(adapter);
     }
 
 
-
+/*
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,7 +54,7 @@ public class MainInterfaceListFragment extends ListFragment {
         return inflater.inflate(R.layout.fragment_main_interface_list, container, false);
     }
 
-
+*/
 
 
 
