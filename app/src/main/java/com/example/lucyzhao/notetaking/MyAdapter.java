@@ -45,7 +45,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - replace the contents of the view with that itemsData
 
         viewHolder.title.setText(foodList.get(position).getTitle());
-        viewHolder.foodImage.setImageResource(R.drawable.foodpic);
+        viewHolder.foodImage.setImageResource(R.drawable.foodpic2);
 
     }
 

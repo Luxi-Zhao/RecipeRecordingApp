@@ -1,16 +1,26 @@
 package com.example.lucyzhao.notetaking;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.IdRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v13.app.FragmentCompat;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -31,6 +41,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -42,6 +53,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.lucyzhao.notetaking.MainActivity.NewNoteDialogFragment.MY_PERMISSIONS_REQUEST_CAMERA;
+import static com.example.lucyzhao.notetaking.MainActivity.NewNoteDialogFragment.MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE;
 import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity {
@@ -77,12 +90,17 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
+
+
     }
 
     @Override
     protected void onStop(){
         super.onStop();
         /* serialize the arraylist */
+        saveFoodList();
+    }
+    private void saveFoodList() {
         try {
             FileOutputStream fos = openFileOutput(LIST_FILE_NAME, MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
@@ -95,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-
     private void initializeFoodList() {
         try {
             FileInputStream fis = openFileInput(LIST_FILE_NAME);
@@ -113,6 +130,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Callback for the add new note floating action button
+     * @param view
+     */
     public void addNewNote(View view) {
         final NewNoteDialogFragment dialogFragment = new NewNoteDialogFragment();
         dialogFragment.show(getSupportFragmentManager(),"newNoteDialogFragment");
@@ -142,6 +163,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class NewNoteDialogFragment extends DialogFragment {
+        static final int REQUEST_IMAGE_CAPTURE = 1;
+        static final int MY_PERMISSIONS_REQUEST_CAMERA = 5656;
+        static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 5757;
+        private View textEntryView;
+
+        Uri imageUri;
+        final int TAKE_PICTURE = 115;
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the Builder class for convenient dialog construction
@@ -149,9 +178,9 @@ public class MainActivity extends AppCompatActivity {
             // Get the layout inflater
             LayoutInflater inflater = getActivity().getLayoutInflater();
 
-            // Inflate and set the layout for the dialog
+            // Inflate and set the layout for the dialog; textEntryView is the view of the dialog
             // Pass null as the parent view because its going in the dialog layout
-            final View textEntryView = inflater.inflate(R.layout.new_note_dialog_fragment, null);
+            textEntryView = inflater.inflate(R.layout.new_note_dialog_fragment, null);
             builder.setView(textEntryView);
 
             Button okButton = (Button) textEntryView.findViewById(R.id.ok_button);
@@ -173,9 +202,129 @@ public class MainActivity extends AppCompatActivity {
                     dismiss();
                 }
             });
+          //  requestUserPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+            tryTakingPicture();
 
             return builder.create();
         }
+
+        private void tryTakingPicture(){
+            FloatingActionButton cameraButton = (FloatingActionButton) textEntryView.findViewById(R.id.camera_button);
+            cameraButton.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view){
+              // doTakingPicture();
+                    requestUserPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+
+
+                   // doTakingPicture();
+                }
+            });
+        }
+
+        private void doTakingPicture(){
+            /*     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        if (takePictureIntent
+                            .resolveActivity((getActivity()).getPackageManager()) != null) {
+                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                    }  */
+
+
+            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+            File photoFile = new File(Environment.getExternalStorageDirectory(),  "photo.png");
+            //imageUri = Uri.fromFile(photoFile);
+            createUri();
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            startActivityForResult(intent, TAKE_PICTURE);
+        }
+
+        /**
+         * give imageUri another value instead of Uri.fromFile(photoFile) because
+         * file: // can no longer be usedERROR: _camera_client_query_start: Cannot start camera 'AndroidEmulatorVC0' for NV21[640x480]: No error
+         */
+        private void createUri(){
+            try {
+                ContentValues values = new ContentValues(1);
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
+                imageUri = getActivity().getContentResolver()
+                        .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+            switch (requestCode) {
+                case TAKE_PICTURE:
+                    if (resultCode == Activity.RESULT_OK) {
+                        Uri selectedImageUri = imageUri;
+                        //Do what ever you want
+                    }
+            }
+        }
+
+        private void requestUserPermission(String devicePermission, int requestCode){
+            Log.v("tag","entering requesting user permission" + devicePermission);
+
+            if (ContextCompat.checkSelfPermission(getContext(),
+                    devicePermission)
+                    == PackageManager.PERMISSION_DENIED) {
+                    // request the permission.
+                    Log.v("tag","requesting permission");
+                    requestPermissions(
+                            new String[]{devicePermission},
+                            requestCode);
+
+            }
+            else if(ContextCompat.checkSelfPermission(getContext(),
+                        Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED){
+                doTakingPicture();
+            }
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode,
+                                               String permissions[], int[] grantResults) {
+            Log.v("tag","entering result");
+            switch (requestCode) {
+                case MY_PERMISSIONS_REQUEST_CAMERA: {
+                    // If request is cancelled, the result arrays are empty.
+                    if (grantResults.length > 0
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Log.v("tag","trying to take picture");
+                        // permission was granted, yay! Take the picture
+                        doTakingPicture();
+                    } else {
+                        Log.v("tag","camera access permission denied");
+                        // permission denied, boo! Disable the
+                        // functionality that depends on this permission.
+                    }
+                    return;
+                }
+                case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
+                    if (grantResults.length > 0
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Log.v("tag","ask for camera permission");
+                        // permission was granted, yay! Ask for camera permission
+                        requestUserPermission(Manifest.permission.CAMERA, MY_PERMISSIONS_REQUEST_CAMERA);
+                    } else {
+                        Log.v("tag","external storage writing permission denied");
+                        // permission denied, boo! Disable the
+                        // functionality that depends on this permission.
+                    }
+                    return;
+                }
+                // other 'case' lines to check for other
+                // permissions this app might request
+            }
+        }
+
+
+
     }
 
 }
