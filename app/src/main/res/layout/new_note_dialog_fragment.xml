@@ -3,57 +3,85 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="wrap_content"
     android:layout_height="wrap_content">
+
     <EditText
         android:id="@+id/new_note_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="4dp"
         android:fontFamily="casual"
-        android:hint="recipe name" />
-
-    <Button
-        android:id="@+id/cancel_button"
+        android:textSize="18sp"
+        android:hint="enter recipe name"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"/>
+    <TextView
+        android:id="@+id/take_picture_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CANCEL"
-        android:layout_marginStart="15dp"
+        android:textSize="18sp"
+        android:text="Take a Picture"
         android:layout_below="@+id/new_note_name"
-        android:layout_toEndOf="@+id/ok_button"
-        android:layout_alignBottom="@+id/ok_button"/>
-
+        android:layout_alignLeft="@+id/new_note_name"
+        android:layout_marginTop="10dp"
+        />
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/camera_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
         app:fabSize="mini"
         app:srcCompat="@android:drawable/ic_menu_camera"
-        android:layout_alignTop="@+id/new_note_name"
-        android:layout_alignEnd="@+id/cancel_button"
-        android:layout_marginEnd="21dp"
-        android:id="@+id/camera_button" />
+        android:layout_below="@+id/take_picture_text"
+        android:layout_marginTop="10dp"
+        android:layout_alignRight="@+id/take_picture_text"
+         />
+
+    <ImageView
+        android:id="@+id/foodpicture_preview"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:maxHeight="100dp"
+        android:maxWidth="100dp"
+        android:src="@drawable/foodpic2"
+        android:layout_below="@+id/new_note_name"
+        android:layout_marginTop="5dp"
+        android:layout_alignRight="@+id/new_note_name"
+        android:layout_marginRight="50dp"
+        android:background="@android:color/transparent" />
 
     <Button
         android:id="@+id/ok_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="OK"
-        android:layout_below="@+id/new_note_name"
-        android:layout_alignStart="@+id/new_note_name" />
+        android:textSize="20sp"
+        android:layout_below="@+id/foodpicture_preview"
+        android:layout_marginTop="10dp"
+        android:layout_alignRight="@id/take_picture_text"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored" />
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:maxHeight="100dp"
-        android:maxWidth="100dp"
-        android:id="@+id/foodpicture_preview"
-        android:src="@drawable/foodpic2"
-        android:layout_marginRight="700dp"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/cancel_button"
-        android:layout_marginStart="40dp" />
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CANCEL"
+        android:textSize="20sp"
+        android:layout_below="@+id/new_note_name"
+        android:layout_alignRight="@+id/foodpicture_preview"
+        android:layout_alignTop="@+id/ok_button"
+        android:layout_alignBottom="@+id/ok_button"
+        style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog" />
+
+
+
+
+
+
+
+
+
+
+
 
 
     <!--   <ImageView
@@ -82,7 +110,65 @@
          android:id="@+id/camera_button"
          android:layout_above="@+id/cancel_button"
          android:layout_alignEnd="@+id/cancel_button"
-         android:layout_marginBottom="38dp" /> -->
+         android:layout_marginBottom="38dp" />
+
+         android lllllllllllllllllllllllllllllllll
+
+
+
+      <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:maxHeight="100dp"
+        android:maxWidth="100dp"
+        android:id="@+id/foodpicture_preview"
+        android:src="@drawable/foodpic2"
+        android:layout_marginRight="700dp"
+        android:layout_centerVertical="true"
+        android:layout_below="@+id/take_picture_text"
+        android:layout_toRightOf="@+id/camera_button"
+        android:layout_marginStart="40dp" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:srcCompat="@android:drawable/ic_menu_camera"
+        android:layout_below="@+id/take_picture_text"
+        android:layout_marginEnd="21dp"
+        android:id="@+id/camera_button" />
+
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CANCEL"
+        android:layout_marginStart="15dp"
+        android:layout_below="@+id/new_note_name"
+        android:layout_toEndOf="@+id/ok_button"
+        android:layout_alignBottom="@+id/ok_button"/>
+
+
+    <Button
+        android:id="@+id/ok_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OK"
+        android:layout_below="@+id/take_picture_text" />
+
+
+
+
+
+
+
+
+
+
+
+
+         -->
 
 
  </RelativeLayout>
