@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Food> foodList = new ArrayList<>();
     MyAdapter myAdapter = new MyAdapter(foodList);
     EditText newNoteName;
+    public Bitmap foodImage;
     private static final String LIST_FILE_NAME = "food_list";
     public final static String EXTRA_TITLE = "com.example.lucyzhao.notetaking.TITLE";
     public final static String EXTRA_PIC = "com.example.lucyzhao.notetaking.PIC";
@@ -162,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if(!nameExists) {
-            foodList.add(new Food(newNoteName.getText().toString()));
+            foodList.add(new Food(newNoteName.getText().toString(), foodImage));
             myAdapter.notifyItemInserted(myAdapter.getItemCount() - 1);
             Toast.makeText(getApplicationContext(),"created!",Toast.LENGTH_SHORT).show();
         }
@@ -173,8 +175,8 @@ public class MainActivity extends AppCompatActivity {
         static final int MY_PERMISSIONS_REQUEST_CAMERA = 5656;
         static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 5757;
         private View fragmentView;
-
         private Uri imageUri;
+        private ImageView picPreview;
         static final int TAKE_PICTURE = 115;
 
         @Override
@@ -188,6 +190,11 @@ public class MainActivity extends AppCompatActivity {
             // Pass null as the parent view because its going in the dialog layout
             fragmentView = inflater.inflate(R.layout.new_note_dialog_fragment, null);
             builder.setView(fragmentView);
+
+            /* Find picture preview and initialize food image with the default image displayed on
+               picture preview */
+            picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
+            ((MainActivity) getActivity()).foodImage = ((BitmapDrawable)picPreview.getDrawable()).getBitmap();
 
             Button okButton = (Button) fragmentView.findViewById(R.id.ok_button);
             Button cancelButton = (Button) fragmentView.findViewById(R.id.cancel_button);
@@ -265,13 +272,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void usePicture(){
-            Uri selectedImageUri = imageUri;
+           // Uri selectedImageUri = imageUri;
             try {
                 Log.v("tag","GETTING PICTURE");
                 Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(
-                        getContext().getContentResolver(), selectedImageUri);
+                        getContext().getContentResolver(), imageUri);
                 Bitmap processedBitmap = processBitmap(originalBitmap, 90);
-                ImageView picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
+                ((MainActivity)getActivity()).foodImage = processedBitmap;
                 picPreview.setImageBitmap(processedBitmap);
             } catch (IOException e) {
                 e.printStackTrace();
