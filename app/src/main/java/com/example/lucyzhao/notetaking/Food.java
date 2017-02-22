@@ -1,5 +1,7 @@
 package com.example.lucyzhao.notetaking;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 /**
@@ -7,12 +9,16 @@ import java.io.Serializable;
  */
 public class Food implements Serializable{
     private final String title;
+    private final Bitmap image;
 
-    public Food( String title ) {
+    public Food( String title, Bitmap image ) {
         this.title = title;
+        this.image = image;
     }
 
     public String getTitle(){
         return title;
     }
+
+    public Bitmap getImage() { return image; }
 }
