@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         /* serialize the arraylist */
         saveFoodList();
     }
+
     private void saveFoodList() {
         try {
             FileOutputStream fos = openFileOutput(LIST_FILE_NAME, MODE_PRIVATE);
