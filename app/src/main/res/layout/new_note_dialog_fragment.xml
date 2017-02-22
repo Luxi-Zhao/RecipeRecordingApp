@@ -15,14 +15,6 @@
         android:hint="recipe name" />
 
     <Button
-        android:id="@+id/ok_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="OK"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/new_note_name" />
-
-    <Button
         android:id="@+id/cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,6 +34,26 @@
         android:layout_alignEnd="@+id/cancel_button"
         android:layout_marginEnd="21dp"
         android:id="@+id/camera_button" />
+
+    <Button
+        android:id="@+id/ok_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OK"
+        android:layout_below="@+id/new_note_name"
+        android:layout_alignStart="@+id/new_note_name" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:maxHeight="100dp"
+        android:maxWidth="100dp"
+        android:id="@+id/foodpicture_preview"
+        android:src="@drawable/foodpic2"
+        android:layout_marginRight="700dp"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/cancel_button"
+        android:layout_marginStart="40dp" />
 
 
     <!--   <ImageView

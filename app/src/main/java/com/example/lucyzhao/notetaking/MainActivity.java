@@ -4,9 +4,15 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,6 +41,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
@@ -74,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         initializeFoodList();
-        for(Food food : foodList){
+   /*     for(Food food : foodList){
             System.out.println(food.getTitle());
-        }
+        } */
 
         RecyclerView recyclerView;
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -163,13 +170,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class NewNoteDialogFragment extends DialogFragment {
-        static final int REQUEST_IMAGE_CAPTURE = 1;
         static final int MY_PERMISSIONS_REQUEST_CAMERA = 5656;
         static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 5757;
-        private View textEntryView;
+        private View fragmentView;
 
-        Uri imageUri;
-        final int TAKE_PICTURE = 115;
+        private Uri imageUri;
+        static final int TAKE_PICTURE = 115;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -180,16 +186,16 @@ public class MainActivity extends AppCompatActivity {
 
             // Inflate and set the layout for the dialog; textEntryView is the view of the dialog
             // Pass null as the parent view because its going in the dialog layout
-            textEntryView = inflater.inflate(R.layout.new_note_dialog_fragment, null);
-            builder.setView(textEntryView);
+            fragmentView = inflater.inflate(R.layout.new_note_dialog_fragment, null);
+            builder.setView(fragmentView);
 
-            Button okButton = (Button) textEntryView.findViewById(R.id.ok_button);
-            Button cancelButton = (Button) textEntryView.findViewById(R.id.cancel_button);
+            Button okButton = (Button) fragmentView.findViewById(R.id.ok_button);
+            Button cancelButton = (Button) fragmentView.findViewById(R.id.cancel_button);
             okButton.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view){
                     ((MainActivity) getActivity()).newNoteName
-                            = (EditText) textEntryView.findViewById(R.id.new_note_name);
+                            = (EditText) fragmentView.findViewById(R.id.new_note_name);
                     //transfer control back to the Fragment's host
                     if(!((MainActivity) getActivity()).onDialogPositiveClick()) {
                         dismiss();
@@ -202,37 +208,24 @@ public class MainActivity extends AppCompatActivity {
                     dismiss();
                 }
             });
-          //  requestUserPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
             tryTakingPicture();
 
             return builder.create();
         }
 
         private void tryTakingPicture(){
-            FloatingActionButton cameraButton = (FloatingActionButton) textEntryView.findViewById(R.id.camera_button);
+            FloatingActionButton cameraButton = (FloatingActionButton) fragmentView.findViewById(R.id.camera_button);
             cameraButton.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view){
-              // doTakingPicture();
+                    //this will request camera permission, which will try to take a picture
                     requestUserPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
-
-
-                   // doTakingPicture();
                 }
             });
         }
 
         private void doTakingPicture(){
-            /*     Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        if (takePictureIntent
-                            .resolveActivity((getActivity()).getPackageManager()) != null) {
-                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                    }  */
-
-
-            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-            File photoFile = new File(Environment.getExternalStorageDirectory(),  "photo.png");
-            //imageUri = Uri.fromFile(photoFile);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             createUri();
             intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             startActivityForResult(intent, TAKE_PICTURE);
@@ -245,26 +238,63 @@ public class MainActivity extends AppCompatActivity {
         private void createUri(){
             try {
                 ContentValues values = new ContentValues(1);
-                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpg");
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+                //insert values into a table at EXTERNAL_CONTENT_URI and get the URI of the newly
+                //created row
                 imageUri = getActivity().getContentResolver()
                         .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
+        /**
+         * Handling result from startActivityForResult
+         * @param requestCode
+         * @param resultCode
+         * @param data
+         */
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            Log.v("tag","ENTERING ON ACTIVITY RESULT");
             super.onActivityResult(requestCode, resultCode, data);
-            switch (requestCode) {
-                case TAKE_PICTURE:
-                    if (resultCode == Activity.RESULT_OK) {
-                        Uri selectedImageUri = imageUri;
-                        //Do what ever you want
-                    }
+            if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
+                usePicture();
+            }
+
+        }
+
+        private void usePicture(){
+            Uri selectedImageUri = imageUri;
+            try {
+                Log.v("tag","GETTING PICTURE");
+                Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(
+                        getContext().getContentResolver(), selectedImageUri);
+                Bitmap processedBitmap = processBitmap(originalBitmap, 90);
+                ImageView picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
+                picPreview.setImageBitmap(processedBitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
+
+        /**
+         * source
+         * http://stackoverflow.com/questions/7286714/android-get-orientation-of-a-camera-bitmap-and-rotate-back-90-degrees
+         * Users should only take pictures in portrait
+         * @param bm
+         * @return
+         */
+        private static Bitmap processBitmap(Bitmap bm, int rotationInDegrees){
+
+            Matrix matrix = new Matrix();
+            //rotate the matrix around a pivot point
+            matrix.setRotate(rotationInDegrees, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+            Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+            Bitmap resizedBitmap = Bitmap.createBitmap(rotatedBitmap, 0,0, bm.getHeight(), bm.getHeight());
+            return resizedBitmap;
+        }
+
 
         private void requestUserPermission(String devicePermission, int requestCode){
             Log.v("tag","entering requesting user permission" + devicePermission);
