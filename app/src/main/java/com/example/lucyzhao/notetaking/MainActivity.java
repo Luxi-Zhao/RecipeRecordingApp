@@ -270,9 +270,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("tag","GETTING PICTURE");
                 Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(
                         getContext().getContentResolver(), selectedImageUri);
-                Bitmap rotatedBitmap = getPictureInCorrectDirection(getContext(), selectedImageUri, originalBitmap);
+                Bitmap processedBitmap = processBitmap(originalBitmap, 90);
                 ImageView picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
-                picPreview.setImageBitmap(rotatedBitmap);
+                picPreview.setImageBitmap(processedBitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -282,68 +282,18 @@ public class MainActivity extends AppCompatActivity {
          * source
          * http://stackoverflow.com/questions/7286714/android-get-orientation-of-a-camera-bitmap-and-rotate-back-90-degrees
          * Users should only take pictures in portrait
-         * @param selectedImageUri
          * @param bm
          * @return
          */
-        private static Bitmap getPictureInCorrectDirection(Context context, Uri selectedImageUri, Bitmap bm){
-            BitmapFactory.Options bounds = new BitmapFactory.Options();
-            bounds.inJustDecodeBounds = true;
+        private static Bitmap processBitmap(Bitmap bm, int rotationInDegrees){
 
-            ExifInterface exif = null;
-            try {
-                exif = getPictureExif(context, selectedImageUri);
-            } catch (IOException e) {
-                Log.v("exception","IOException is thrown from get picture exif");
-                e.printStackTrace();
-            }
-        //    int rotationFlag = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-        //    Log.v("rotationFlag", ""+rotationFlag);
-           // int rotationAngle = rotationInDegrees(rotationFlag);
             Matrix matrix = new Matrix();
             //rotate the matrix around a pivot point
-            matrix.setRotate(90, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
-          //  Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bounds.outWidth, bounds.outHeight, matrix, true);
+            matrix.setRotate(rotationInDegrees, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
             Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
-            return rotatedBitmap;
+            Bitmap resizedBitmap = Bitmap.createBitmap(rotatedBitmap, 0,0, bm.getHeight(), bm.getHeight());
+            return resizedBitmap;
         }
-
-    /*    private static int rotationInDegrees(int rotationFlag) {
-            if (rotationFlag == ExifInterface.ORIENTATION_ROTATE_90) return 90;
-            else if (rotationFlag == ExifInterface.ORIENTATION_ROTATE_180) return 180;
-            else if (rotationFlag == ExifInterface.ORIENTATION_ROTATE_270) return 270;
-            else return 0;
-        } */
-
-
-        /**
-         * Source:
-         * http://stackoverflow.com/questions/34696787/a-final-answer-on-how-to-get-exif-data-from-uri
-         * http://stackoverflow.com/questions/12933085/android-camera-intent-saving-image-landscape-when-taken-portrait
-         * TODO I DON'T UNDERSTAND ANY OF IT
-         * @param context
-         * @param uri
-         * @return
-         * @throws IOException
-         */
-        public static ExifInterface getPictureExif(Context context, Uri uri) throws IOException {
-            String path;
-            // we can use ContentResolver.
-            // let’s query the DATA column which holds the path
-            String col = MediaStore.Images.ImageColumns.DATA;
-            Cursor c = context.getContentResolver().query(uri, new String[]{col}, null, null, null);
-            if (c != null && c.moveToFirst()) {
-                path = c.getString(c.getColumnIndex(col));
-                c.close();
-                return new ExifInterface(path);
-            }
-            else {
-                Log.v("Error", "NULL returned from gitPictureExif");
-                return null;
-            }
-        }
-
-
 
 
         private void requestUserPermission(String devicePermission, int requestCode){

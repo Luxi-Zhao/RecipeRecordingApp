@@ -44,8 +44,10 @@
         android:layout_alignStart="@+id/new_note_name" />
 
     <ImageView
-        android:layout_width="70dp"
+        android:layout_width="100dp"
         android:layout_height="100dp"
+        android:maxHeight="100dp"
+        android:maxWidth="100dp"
         android:id="@+id/foodpicture_preview"
         android:src="@drawable/foodpic2"
         android:layout_marginRight="700dp"
