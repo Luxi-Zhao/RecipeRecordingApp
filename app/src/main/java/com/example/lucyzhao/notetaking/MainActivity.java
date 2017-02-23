@@ -68,9 +68,10 @@ import static java.security.AccessController.getContext;
 public class MainActivity extends AppCompatActivity {
     // this is data for recycler view
     ArrayList<Food> foodList = new ArrayList<>();
-    MyAdapter myAdapter = new MyAdapter(foodList);
+    MyAdapter myAdapter;
     EditText newNoteName;
     public Bitmap foodImage;
+    private Uri imageUri;
     private static final String LIST_FILE_NAME = "food_list";
     public final static String EXTRA_TITLE = "com.example.lucyzhao.notetaking.TITLE";
     public final static String EXTRA_PIC = "com.example.lucyzhao.notetaking.PIC";
@@ -93,14 +94,12 @@ public class MainActivity extends AppCompatActivity {
         // set layoutManger
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         // create an adapter
-        myAdapter = new MyAdapter(foodList);
+        myAdapter = new MyAdapter(foodList, getApplicationContext());
         // set adapter
         recyclerView.setAdapter(myAdapter);
 
         recyclerView.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
-
-
     }
 
     @Override
@@ -165,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if(!nameExists) {
-            foodList.add(new Food(newNoteName.getText().toString(), foodImage));
+            foodList.add(new Food(newNoteName.getText().toString(), imageUri.toString()));
             myAdapter.notifyItemInserted(myAdapter.getItemCount() - 1);
             Toast.makeText(getApplicationContext(),"created!",Toast.LENGTH_SHORT).show();
         }
@@ -175,8 +174,8 @@ public class MainActivity extends AppCompatActivity {
     public static class NewNoteDialogFragment extends DialogFragment {
         static final int MY_PERMISSIONS_REQUEST_CAMERA = 5656;
         static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 5757;
+        static final String DEFAULT_PICTURE_PATH = "android.resource://com.example.lucyzhao.notetaking/drawable/foodpic2";
         private View fragmentView;
-        private Uri imageUri;
         private ImageView picPreview;
         static final int TAKE_PICTURE = 115;
 
@@ -196,6 +195,13 @@ public class MainActivity extends AppCompatActivity {
                picture preview */
             picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
             ((MainActivity) getActivity()).foodImage = ((BitmapDrawable)picPreview.getDrawable()).getBitmap();
+
+            /*TODO initialize imageUri with the default picture in case the user doesn't want to use
+              a custom picture
+             */
+            ((MainActivity) getActivity()).imageUri = Uri.parse(DEFAULT_PICTURE_PATH);
+
+
 
             Button okButton = (Button) fragmentView.findViewById(R.id.ok_button);
             Button cancelButton = (Button) fragmentView.findViewById(R.id.cancel_button);
@@ -235,13 +241,13 @@ public class MainActivity extends AppCompatActivity {
         private void doTakingPicture(){
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             createUri();
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, ((MainActivity)getActivity()).imageUri);
             startActivityForResult(intent, TAKE_PICTURE);
         }
 
         /**
          * give imageUri another value instead of Uri.fromFile(photoFile) because
-         * file: // can no longer be usedERROR: _camera_client_query_start: Cannot start camera 'AndroidEmulatorVC0' for NV21[640x480]: No error
+         * file: // can no longer be used
          */
         private void createUri(){
             try {
@@ -249,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
                 values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
                 //insert values into a table at EXTERNAL_CONTENT_URI and get the URI of the newly
                 //created row
-                imageUri = getActivity().getContentResolver()
+                ((MainActivity)getActivity()).imageUri = getActivity().getContentResolver()
                         .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -267,17 +273,17 @@ public class MainActivity extends AppCompatActivity {
             Log.v("tag","ENTERING ON ACTIVITY RESULT");
             super.onActivityResult(requestCode, resultCode, data);
             if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
-                usePicture();
+                setPicturePreview();
             }
 
         }
 
-        private void usePicture(){
+        private void setPicturePreview(){
            // Uri selectedImageUri = imageUri;
             try {
                 Log.v("tag","GETTING PICTURE");
                 Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(
-                        getContext().getContentResolver(), imageUri);
+                        getContext().getContentResolver(), ((MainActivity)getActivity()).imageUri);
                 Bitmap processedBitmap = processBitmap(originalBitmap, 90);
                 ((MainActivity)getActivity()).foodImage = processedBitmap;
                 picPreview.setImageBitmap(processedBitmap);
@@ -293,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
          * @param bm
          * @return
          */
-        private static Bitmap processBitmap(Bitmap bm, int rotationInDegrees){
+        public static Bitmap processBitmap(Bitmap bm, int rotationInDegrees){
 
             Matrix matrix = new Matrix();
             //rotate the matrix around a pivot point

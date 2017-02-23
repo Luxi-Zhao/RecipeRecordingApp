@@ -19,9 +19,11 @@ import java.util.ArrayList;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private ArrayList<Food> foodList;
+    private Context associatedActivityContext;
 
-    public MyAdapter(ArrayList<Food> foodList) {
-       this.foodList = foodList;
+    public MyAdapter(ArrayList<Food> foodList, Context associatedActivityContext) {
+        this.foodList = foodList;
+        this.associatedActivityContext = associatedActivityContext;
     }
 
     // Create new views (invoked by the layout manager)
@@ -46,7 +48,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         viewHolder.title.setText(foodList.get(position).getTitle());
         //viewHolder.foodImage.setImageResource(R.drawable.foodpic2);
-        viewHolder.foodImage.setImageBitmap(foodList.get(position).getImage());
+        viewHolder.foodImage.setImageBitmap(foodList.get(position).getImage(associatedActivityContext));
 
     }
 
