@@ -50,6 +50,7 @@ import static java.security.AccessController.getContext;
             Log.v("IOException","bitmap cannot be created from uri");
             e.printStackTrace();
         }
+        /* TODO note: CHANGED FROM 90 TO 0 ON REAL DEVICE*/
         if(imageUriString.equals(DEFAULT_PICTURE_PATH))
             return originalBitmap;
         else return processBitmap(originalBitmap, 90);

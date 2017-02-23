@@ -255,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.v("tag","GETTING PICTURE");
                 Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(
                         getContext().getContentResolver(), ((MainActivity)getActivity()).imageUri);
+                /* TODO note: CHANGED FROM 90 TO 0 ON REAL DEVICE*/
                 Bitmap processedBitmap = processBitmap(originalBitmap, 90);
                 ImageView picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
                 picPreview.setImageBitmap(processedBitmap);
@@ -276,7 +277,11 @@ public class MainActivity extends AppCompatActivity {
             //rotate the matrix around a pivot point
             matrix.setRotate(rotationInDegrees, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
             Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
-            Bitmap resizedBitmap = Bitmap.createBitmap(rotatedBitmap, 0,0, bm.getHeight(), bm.getHeight());
+            int newSize;
+            if(bm.getHeight() > bm.getWidth())
+                newSize = bm.getWidth();
+            else newSize = bm.getHeight();
+            Bitmap resizedBitmap = Bitmap.createBitmap(rotatedBitmap, 0,0, newSize, newSize);
             return resizedBitmap;
         }
 
