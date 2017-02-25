@@ -11,7 +11,10 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -35,6 +38,8 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +54,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+
+import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_IDLE;
+import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_SWIPE;
+import static android.support.v7.widget.helper.ItemTouchHelper.LEFT;
+import static android.support.v7.widget.helper.ItemTouchHelper.RIGHT;
+import static java.security.AccessController.getContext;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -82,6 +93,73 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
+
+        /*---------------detecting swipe motion--------------------*/
+        ItemTouchHelper mIth = new ItemTouchHelper(
+                new ItemTouchHelper.Callback() {
+                    private Paint paint = new Paint();
+                    private Paint textPaint = new Paint();
+                    private final Bitmap deleteIcon = BitmapFactory.decodeResource(getApplicationContext().getResources(), android.R.drawable.ic_menu_delete);
+
+                    @Override
+                    public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                        return makeFlag(ACTION_STATE_IDLE, LEFT) | makeFlag(ACTION_STATE_SWIPE, LEFT);
+                    }
+
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                        return false; //this method should never be called
+                    }
+                    /* when the user swipes a view, it gets deleted */
+                    @Override
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                        Log.v("onSwiped","you swiped it!");
+                        Log.v("onSwiped","adapter position is "+viewHolder.getAdapterPosition());
+                        foodList.remove(viewHolder.getAdapterPosition());
+                        myAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+                    }
+
+                    @Override
+                    public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder){
+                        return 0.4f;
+                    }
+
+                    @Override
+                    public void onChildDraw(Canvas c,
+                                            RecyclerView recyclerView,
+                                            RecyclerView.ViewHolder viewHolder,
+                                            float dX,
+                                            float dY,
+                                            int actionState,
+                                            boolean isCurrentlyActive){
+                        super.onChildDraw(c,recyclerView,viewHolder,dX,dY,actionState,isCurrentlyActive);
+                        if(isCurrentlyActive && actionState == ACTION_STATE_SWIPE) {
+                            Log.v("onChildDraw", "swipe dX is " + dX);
+                            paint.setColor(0xffff0000);
+                            View view = viewHolder.itemView;
+                            /* draw the red rectangle */
+                            c.drawRect(view.getRight() + dX, view.getTop(), view.getRight(), view.getBottom(), paint);
+                            /* draw the delete icon and "swipe to delete" text */
+                            if (dX <= -200){
+                                c.drawBitmap(deleteIcon, view.getRight() - deleteIcon.getWidth() - 50,
+                                        view.getTop() + (view.getBottom() - view.getTop() - deleteIcon.getHeight()) / 2, paint);
+                                textPaint.setColor(Color.WHITE);
+                                textPaint.setStyle(Paint.Style.FILL);
+                                int textSize = 50;
+                                textPaint.setTextSize(textSize);
+                                String text = "swipe to delete";
+                                float textWidth = textPaint.measureText(text);
+                                c.drawText(text,view.getRight() - textWidth - deleteIcon.getWidth() - 70,
+                                        view.getTop() + (view.getBottom()-view.getTop())/2 + textSize/2, textPaint);
+                            }
+                        }
+                    }
+
+
+                });
+        mIth.attachToRecyclerView(recyclerView);
+        /*---------------end of detecting swipe motion--------------------*/
+
     }
 
     @Override
