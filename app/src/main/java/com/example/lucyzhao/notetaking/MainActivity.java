@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                                             boolean isCurrentlyActive){
                         super.onChildDraw(c,recyclerView,viewHolder,dX,dY,actionState,isCurrentlyActive);
                         if(isCurrentlyActive && actionState == ACTION_STATE_SWIPE) {
-                            Log.v("onChildDraw", "swipe dX is " + dX);
                             paint.setColor(0xffff0000);
                             View view = viewHolder.itemView;
                             /* draw the red rectangle */
