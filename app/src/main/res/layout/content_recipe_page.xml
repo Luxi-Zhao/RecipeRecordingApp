@@ -44,24 +44,134 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
 
-    <EditText
-        android:id="@+id/ingredients"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="23dp"
-        android:background="@android:color/transparent"
-        android:hint="add ingredients "
-        android:layout_below="@+id/single_page_foodpicture"
-        android:layout_alignParentStart="true" />
 
+
+<!--
     <EditText
         android:id="@+id/procedure"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:hint="add procedure "
-        android:layout_below="@+id/ingredients"
-        android:layout_alignEnd="@+id/ingredients"
-        android:layout_marginTop="15dp" />
+        android:layout_marginTop="15dp" />  -->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_marginTop="100dp"
+        android:id="@+id/ingredients_linear_layout"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="INGREDIENTS"/>
+        <TableLayout
+            android:id="@+id/ingredients_legend"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableRow>
+                <TextView
+                    android:padding="10dp"/>
+                <TextView
+                    android:id="@+id/amount_tag"
+                    android:text="amount"
+                    android:textSize="16sp"
+                    android:padding="10dp"
+                    />
+                <TextView
+                    android:id="@+id/name_tag"
+                    android:text="name"
+                    android:textSize="16sp"
+                    android:padding="10dp"
+                     />
+                <TextView
+                    android:id="@+id/description_tag"
+                    android:text="description"
+                    android:textSize="16sp"
+                    android:paddingStart="20dp"
+                    android:padding="10dp"
+                    />
+            </TableRow>
+        </TableLayout>
+
+        <ScrollView
+            android:id="@+id/ingredients_scrollview"
+            android:background="@drawable/dotted_shape"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/ingredients_legend">
+            <RelativeLayout
+                android:id="@+id/ingredients_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/dot"
+                    android:id="@+id/first_bullet"
+                    />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:textSize="18sp"
+                    android:background="@android:color/transparent"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/ingredients_edit_text"/>
+            </RelativeLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_below="@+id/ingredients_linear_layout"
+        android:layout_marginTop="30dp"
+        android:layout_alignParentStart="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PROCEDURE"/>
+
+        <ScrollView
+            android:id="@+id/procedure_scrollview"
+            android:background="@drawable/dotted_shape"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/ingredients_legend">
+            <RelativeLayout
+                android:id="@+id/procedure_relative_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/dot"
+                    android:id="@+id/second_bullet"
+                    />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:textSize="18sp"
+                    android:background="@android:color/transparent"
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/procedure_edit_text"/>
+            </RelativeLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
 
 </RelativeLayout>
+
+
