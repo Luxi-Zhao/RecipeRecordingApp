@@ -16,20 +16,20 @@ import java.util.ArrayList;
 /**
  * Created by LucyZhao on 2016/11/12.
  */
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHolder> {
 
     private ArrayList<Food> foodList;
     private Context associatedActivityContext;
 
-    public MyAdapter(ArrayList<Food> foodList, Context associatedActivityContext) {
+    public FoodListAdapter(ArrayList<Food> foodList, Context associatedActivityContext) {
         this.foodList = foodList;
         this.associatedActivityContext = associatedActivityContext;
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                   int viewType) {
+    public FoodListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                         int viewType) {
         // create a new view
         View itemLayoutView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.single_list_item, null);
@@ -47,7 +47,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // - replace the contents of the view with that itemsData
 
         viewHolder.title.setText(foodList.get(position).getTitle());
-        //viewHolder.foodImage.setImageResource(R.drawable.foodpic2);
         viewHolder.foodImage.setImageBitmap(foodList.get(position).getImage(associatedActivityContext));
 
     }

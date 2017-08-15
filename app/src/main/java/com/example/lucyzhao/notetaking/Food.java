@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import static com.example.lucyzhao.notetaking.MainActivity.NewNoteDialogFragment.DEFAULT_PICTURE_PATH;
-import static com.example.lucyzhao.notetaking.MainActivity.NewNoteDialogFragment.processBitmap;
 import static java.security.AccessController.getContext;
 
 /**
@@ -53,6 +52,6 @@ import static java.security.AccessController.getContext;
         /* TODO note: CHANGED FROM 90 TO 0 ON REAL DEVICE*/
         if(imageUriString.equals(DEFAULT_PICTURE_PATH))
             return originalBitmap;
-        else return processBitmap(originalBitmap, 90);
+        else return Utils.processBitmap(originalBitmap);
     }
 }
