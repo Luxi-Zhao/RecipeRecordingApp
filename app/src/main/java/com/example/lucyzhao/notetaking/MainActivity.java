@@ -53,9 +53,6 @@ public class MainActivity extends AppCompatActivity {
     private Uri imageUri;   //stores the uri of the last image saved to device
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    public final static String EXTRA_TITLE = "com.example.lucyzhao.notetaking.TITLE";
-    public final static String EXTRA_PIC = "com.example.lucyzhao.notetaking.PIC";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,13 +100,21 @@ public class MainActivity extends AppCompatActivity {
                         Log.v("onSwiped","you swiped it!");
                         Log.v("onSwiped","adapter position is " + posSwiped);
 
-                        /* delete the picture associated */
+                        /* 1.delete the picture associated */
                         String uriString = foodList.get(posSwiped).getImageUriString();
                         deleteImageOnDevice(Uri.parse(uriString), getApplicationContext());
 
-                        /* remove the swiped item from the adapter */
+                        /*  2.remove the ingredient and procedure files from internal
+                            storage
+                            3.remove the swiped item from the adapter and its internal
+                            list
+                         */
+                        if(!Utils.deleteFoodDir(getApplicationContext(), foodList.get(posSwiped).getId())){
+                            Toast.makeText(getApplicationContext(), "Error: delete failed", Toast.LENGTH_LONG);
+                        }
                         foodList.remove(posSwiped);
                         foodListAdapter.notifyItemRemoved(posSwiped);
+
                     }
 
                     @Override

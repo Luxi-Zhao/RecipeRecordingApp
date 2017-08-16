@@ -5,7 +5,9 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,12 +23,14 @@ import static android.content.Context.MODE_PRIVATE;
  */
 
 public class Utils {
+    public static final String TAG = Utils.class.getSimpleName();
+
     public static final String EXTRA_CLICKING_POSITION = "clicking_pos";
     public static final String EXTRA_FOOD_OBJECT = "food_object";
 
     public static final String LIST_FILE_NAME = "food_list";
-    public static final String CHILD_PATH_INGREDIENTS = "_ingredients";
-    public static final String CHILD_PATH_PROCEDURE = "_procedure";
+    public static final String CHILD_PATH_INGREDIENTS = "/ingredients";
+    public static final String CHILD_PATH_PROCEDURE = "/procedure";
     public static final String DEFAULT_PICTURE_PATH = "android.resource://com.example.lucyzhao.notetaking/drawable/foodpic2";
     public static final String DEFAULT_PICTURE_URI_PATH = "/drawable/foodpic2";
     public static final String ID_KEY = "id_key";
@@ -104,5 +108,39 @@ public class Utils {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(ID_KEY, newValue);
         editor.commit();
+    }
+
+    /**
+     * Delete an entire food folder
+     * @param context
+     * @param foodId
+     * @return
+     */
+    public static boolean deleteFoodDir(Context context, int foodId){
+
+        File dir = new File(context.getFilesDir() + "/" + foodId);
+        Log.v(TAG, "dir to delete is: " + dir.getAbsolutePath());
+        if (dir.exists()) {
+            deleteRecursive(dir);
+        }
+        Log.v(TAG, "is the dir deleted? " + !dir.exists());
+        return !dir.exists();
+    }
+
+    /**
+     * Source:
+     * https://stackoverflow.com/questions/13410949/how-to-delete-folder-from-internal-storage-in-android
+     * @param fileOrDirectory
+     */
+    public static void deleteRecursive(File fileOrDirectory) {
+
+        if (fileOrDirectory.isDirectory()) {
+            for (File child : fileOrDirectory.listFiles()) {
+                Log.v(TAG, "child is: " + child.getPath());
+                deleteRecursive(child);
+            }
+        }
+
+        fileOrDirectory.delete();
     }
 }

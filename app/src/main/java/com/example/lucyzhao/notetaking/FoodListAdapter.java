@@ -80,14 +80,6 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(context, RecipePageActivity.class);
-            String noteTitle = title.getText().toString();
-            intent.putExtra(MainActivity.EXTRA_TITLE, noteTitle);
-
-            foodImage.buildDrawingCache();
-            Bitmap bitmap = foodImage.getDrawingCache();
-            Bundle extras = new Bundle();
-            extras.putParcelable(MainActivity.EXTRA_PIC, bitmap);
-            intent.putExtras(extras);
 
             intent.putExtra(Utils.EXTRA_CLICKING_POSITION, this.getAdapterPosition());
             intent.putExtra(Utils.EXTRA_FOOD_OBJECT, foodList.get(this.getAdapterPosition()));

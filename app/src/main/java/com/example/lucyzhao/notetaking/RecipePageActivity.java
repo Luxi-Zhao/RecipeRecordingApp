@@ -54,23 +54,25 @@ public class RecipePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_page);
 
-        /* ------------ set note page title ----------------*/
+        /* ------------ get intent --------------*/
         Intent intent = getIntent();
-        String title = intent.getStringExtra(MainActivity.EXTRA_TITLE);
-        file_name = title;
+        /* ------- find out which item got clicked ----------*/
+        clickingPos = intent.getIntExtra(Utils.EXTRA_CLICKING_POSITION, -1);
+        /* ------- get the food object ---------------*/
+        Food food = (Food) intent.getSerializableExtra(Utils.EXTRA_FOOD_OBJECT);
+        Log.v(TAG, "food info: title " + food.getTitle());
+        Log.v(TAG, "food info: id " + food.getId());
+
+        /* ------------ set note page title ----------------*/
+        String title = food.getTitle();
+        file_name = Integer.toString(food.getId());
         initial_title = title;
         titleEt = (EditText) findViewById(R.id.single_page_title);
         titleEt.setText(title);
 
-        /* ------- find out which item is clicked ----------*/
-        clickingPos = intent.getIntExtra(Utils.EXTRA_CLICKING_POSITION,-1);
-        Food food = (Food) intent.getSerializableExtra(Utils.EXTRA_FOOD_OBJECT);
-
         /*--------------set note page picture --------------*/
-        Bundle extras = getIntent().getExtras();
-        Bitmap bmp = extras.getParcelable(MainActivity.EXTRA_PIC);
         ImageView foodPic = (ImageView) findViewById(R.id.single_page_foodpicture);
-        foodPic.setImageBitmap(bmp);
+        foodPic.setImageBitmap(food.getImage(this));
 
         /* -------------find EditText contents -------------*/
         procedureEditText = (EditText) findViewById(R.id.procedure_edit_text);
@@ -80,7 +82,7 @@ public class RecipePageActivity extends AppCompatActivity {
         //read information saved in internal storage and displays it
         displayInfo();
 
-        /* ---------------test display all files-------------*/
+        /* ---------------TODO delete test display all files-------------*/
         File file = getFilesDir();
         File[] listOfFiles = file.listFiles();
         for(File f : listOfFiles){
@@ -229,7 +231,14 @@ public class RecipePageActivity extends AppCompatActivity {
     private void saveToFolder(EditText editText, String folder_name){
         String textToSave = editText.getText().toString();
         try {
-            FileOutputStream fos = openFileOutput(file_name + folder_name, MODE_PRIVATE);
+            File file = new File(getFilesDir().getPath() + "/" + file_name + folder_name);
+            if(!file.exists()){
+                boolean result = file.getParentFile().mkdirs();
+                Log.v(TAG, Boolean.toString(result));
+                boolean file_result = file.createNewFile();
+                Log.v(TAG, "result for creating a new file: " + Boolean.toString(file_result));
+            }
+            FileOutputStream fos = new FileOutputStream(file, true);
             fos.write(textToSave.getBytes());
             fos.close();
         } catch (FileNotFoundException e) {
@@ -248,7 +257,7 @@ public class RecipePageActivity extends AppCompatActivity {
     private void retrieveFromFolder(EditText editText, String folder_name) {
         String savedInfo;
         try {
-            FileInputStream fis = openFileInput(file_name + folder_name);
+            FileInputStream fis = new FileInputStream (new File(getFilesDir().getPath() + "/" + file_name + folder_name));
             BufferedReader bufferedReader
                     = new BufferedReader(new InputStreamReader(fis));
             StringBuffer stringBuffer = new StringBuffer();
