@@ -21,15 +21,23 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.util.ArrayList;
 import java.util.Stack;
 
 import static com.example.lucyzhao.notetaking.Utils.CHILD_PATH_INGREDIENTS;
 import static com.example.lucyzhao.notetaking.Utils.CHILD_PATH_PROCEDURE;
+import static com.example.lucyzhao.notetaking.Utils.LIST_FILE_NAME;
+import static com.example.lucyzhao.notetaking.Utils.getCachedFoodList;
 
 public class RecipePageActivity extends AppCompatActivity {
+    private static final String TAG = RecipePageActivity.class.getSimpleName();
+
+    EditText titleEt;
     EditText ingredientsEditText;
     EditText procedureEditText;
     private String file_name;
+    private String initial_title;
 
     private float density;
     /* ingredient fields */
@@ -38,6 +46,8 @@ public class RecipePageActivity extends AppCompatActivity {
     /* procedure fields */
     private int procedure_prevNumOfLines = 1;
     private Stack<Integer> procedure_bulletIds = new Stack<>();
+
+    private int clickingPos = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +58,13 @@ public class RecipePageActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String title = intent.getStringExtra(MainActivity.EXTRA_TITLE);
         file_name = title;
-        TextView titleTv = (TextView) findViewById(R.id.single_page_title);
-        titleTv.setText(title);
+        initial_title = title;
+        titleEt = (EditText) findViewById(R.id.single_page_title);
+        titleEt.setText(title);
+
+        /* ------- find out which item is clicked ----------*/
+        clickingPos = intent.getIntExtra(Utils.EXTRA_CLICKING_POSITION,-1);
+        Food food = (Food) intent.getSerializableExtra(Utils.EXTRA_FOOD_OBJECT);
 
         /*--------------set note page picture --------------*/
         Bundle extras = getIntent().getExtras();
@@ -163,6 +178,18 @@ public class RecipePageActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onStop(){
+        super.onStop();
+        Log.v(TAG, "in onStop");
+    }
+
+    @Override
+    protected void onRestart(){
+        super.onRestart();
+        Log.v(TAG, "in onRestart");
+    }
+
 
     /**
      * save user input 
@@ -171,6 +198,20 @@ public class RecipePageActivity extends AppCompatActivity {
     public void saveInfo(View view){
         saveToFolder(ingredientsEditText, CHILD_PATH_INGREDIENTS);
         saveToFolder(procedureEditText, CHILD_PATH_PROCEDURE);
+
+        String cur_title = titleEt.getText().toString();
+        if(!cur_title.equals(initial_title)){
+           Log.v(TAG, "title is edited");
+           ArrayList<Food> foodList = Utils.getCachedFoodList(this);
+           if(foodList != null && clickingPos != -1){
+               foodList.get(clickingPos).setTitle(cur_title);
+               Utils.saveFoodList(getApplicationContext(),foodList);
+               Log.v(TAG, "foodlist saved");
+           }
+           else{
+               Log.v(TAG, "something's wrong");
+           }
+        }
         //displays a message saying information saved
         Toast.makeText(getApplicationContext(),"input saved",Toast.LENGTH_LONG).show();
     }

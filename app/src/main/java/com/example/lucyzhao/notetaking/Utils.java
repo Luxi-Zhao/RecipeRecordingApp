@@ -1,16 +1,35 @@
 package com.example.lucyzhao.notetaking;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.preference.PreferenceManager;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by LucyZhao on 2017/8/15.
  */
 
 public class Utils {
+    public static final String EXTRA_CLICKING_POSITION = "clicking_pos";
+    public static final String EXTRA_FOOD_OBJECT = "food_object";
+
     public static final String LIST_FILE_NAME = "food_list";
     public static final String CHILD_PATH_INGREDIENTS = "_ingredients";
     public static final String CHILD_PATH_PROCEDURE = "_procedure";
+    public static final String DEFAULT_PICTURE_PATH = "android.resource://com.example.lucyzhao.notetaking/drawable/foodpic2";
+    public static final String DEFAULT_PICTURE_URI_PATH = "/drawable/foodpic2";
+    public static final String ID_KEY = "id_key";
 
     /**
      * Rotate the bitmap by certain degrees
@@ -41,5 +60,49 @@ public class Utils {
         else newSize = bm.getHeight();
         Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0,0, newSize, newSize);
         return resizedBitmap;
+    }
+
+    public static void saveFoodList(Context context, ArrayList<Food> foodList) {
+        try {
+            FileOutputStream fos = context.openFileOutput(LIST_FILE_NAME, MODE_PRIVATE);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
+            objectOutputStream.writeObject(foodList);
+            objectOutputStream.close();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static ArrayList<Food> getCachedFoodList(Context context) {
+        ArrayList<Food> foodList = null;
+        try {
+            FileInputStream fis = context.openFileInput(LIST_FILE_NAME);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fis);
+            foodList = (ArrayList<Food>) objectInputStream.readObject();
+            objectInputStream.close();
+            fis.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return foodList;
+    }
+
+    public static int getLastFoodId(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getInt(ID_KEY, 0); //0 is the default value
+    }
+
+    public static void setLastFoodId(Context context, int newValue) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(ID_KEY, newValue);
+        editor.commit();
     }
 }

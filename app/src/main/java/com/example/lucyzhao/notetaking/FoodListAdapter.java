@@ -18,15 +18,17 @@ import java.util.ArrayList;
  */
 public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHolder> {
 
-    private ArrayList<Food> foodList;
+    private static ArrayList<Food> foodList;
     private Context associatedActivityContext;
 
-    public FoodListAdapter(ArrayList<Food> foodList, Context associatedActivityContext) {
-        this.foodList = foodList;
+    public FoodListAdapter(ArrayList<Food> food_List, Context associatedActivityContext) {
+        foodList = food_List;
         this.associatedActivityContext = associatedActivityContext;
     }
 
-    // Create new views (invoked by the layout manager)
+    /**
+     * Create new views (invoked by the layout manager)
+     */
     @Override
     public FoodListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                          int viewType) {
@@ -34,12 +36,12 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
         View itemLayoutView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.single_list_item, null);
 
-        // create ViewHolder
-        ViewHolder viewHolder = new ViewHolder(itemLayoutView);
-        return viewHolder;
+        return new ViewHolder(itemLayoutView);
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
+    /**
+     * Replace the contents of a view (invoked by the layout manager)
+     */
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
@@ -51,6 +53,14 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
 
     }
 
+    /**
+     * Replace the inner list with a new list
+     * @param newFoodList
+     */
+    public void updateInnerList(ArrayList<Food> newFoodList){
+        foodList = newFoodList;
+        this.notifyDataSetChanged();
+    }
 
     // inner class to hold a reference to each item of RecyclerView
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -72,12 +82,15 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
             Intent intent = new Intent(context, RecipePageActivity.class);
             String noteTitle = title.getText().toString();
             intent.putExtra(MainActivity.EXTRA_TITLE, noteTitle);
+
             foodImage.buildDrawingCache();
             Bitmap bitmap = foodImage.getDrawingCache();
-
             Bundle extras = new Bundle();
             extras.putParcelable(MainActivity.EXTRA_PIC, bitmap);
             intent.putExtras(extras);
+
+            intent.putExtra(Utils.EXTRA_CLICKING_POSITION, this.getAdapterPosition());
+            intent.putExtra(Utils.EXTRA_FOOD_OBJECT, foodList.get(this.getAdapterPosition()));
 
             context.startActivity(intent);
         }

@@ -34,7 +34,7 @@
         app:srcCompat="@android:drawable/ic_menu_save"
         app:backgroundTint="@android:color/holo_blue_light" />
 
-    <TextView
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/single_page_title"

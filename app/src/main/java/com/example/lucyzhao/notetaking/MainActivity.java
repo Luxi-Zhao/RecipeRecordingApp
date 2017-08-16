@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,24 +33,22 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_IDLE;
 import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_SWIPE;
 import static android.support.v7.widget.helper.ItemTouchHelper.LEFT;
-import static com.example.lucyzhao.notetaking.Utils.LIST_FILE_NAME;
+import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
 
 
 public class MainActivity extends AppCompatActivity {
-    // this is data for recycler view
+    // this is data for recycler view, always represents the newest food list
     ArrayList<Food> foodList = new ArrayList<>();
     FoodListAdapter foodListAdapter;
+
+    private boolean getCache = true;
+
     EditText newNoteName;
     private Uri imageUri;   //stores the uri of the last image saved to device
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -67,7 +64,10 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // get the cached foodlist
-        initializeFoodList();
+        ArrayList<Food> cachedFoodList = Utils.getCachedFoodList(getApplicationContext());
+        if(cachedFoodList != null){
+            foodList = cachedFoodList;
+        }
 
         /*--------- setting up recycler view --------*/
         RecyclerView recyclerView;
@@ -158,39 +158,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop(){
         super.onStop();
         /* serialize the arraylist */
-        saveFoodList();
+        Log.v(TAG, "in onStop");
+        Utils.saveFoodList(getApplicationContext(),foodList);
     }
 
-    private void saveFoodList() {
-        try {
-            FileOutputStream fos = openFileOutput(LIST_FILE_NAME, MODE_PRIVATE);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
-            objectOutputStream.writeObject(foodList);
-            objectOutputStream.close();
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    @Override
+    protected void onRestart(){
+        super.onRestart();
+        Log.v(TAG, "in onRestart");
+        if(getCache) {
+            Log.v(TAG, "getting cache");
+            ArrayList<Food> newFoodList = Utils.getCachedFoodList(getApplicationContext());
+            foodListAdapter.updateInnerList(newFoodList);
+            foodList = newFoodList;
+        }
+        else {
+            Log.v(TAG, "do not get cache");
+            getCache = true;
         }
     }
 
-    private void initializeFoodList() {
-        try {
-            FileInputStream fis = openFileInput(LIST_FILE_NAME);
-            ObjectInputStream objectInputStream = new ObjectInputStream(fis);
-            foodList = (ArrayList<Food>) objectInputStream.readObject();
-            objectInputStream.close();
-            fis.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     /**
      * Delete the image saved in the gallery
@@ -198,8 +185,13 @@ public class MainActivity extends AppCompatActivity {
      * @param context current context
      */
     private static void deleteImageOnDevice(Uri uri, Context context){
-        Log.v(TAG, "deleting file");
-        context.getContentResolver().delete(uri, null, null);
+        Log.v(TAG, "deleting file" + uri.getPath());
+        if (!uri.getPath().equals(Utils.DEFAULT_PICTURE_URI_PATH)){
+            Log.v(TAG, "uri.getPath() is {" + uri.getPath() + "}");
+            Log.v(TAG, "default picture uri path is {" + Utils.DEFAULT_PICTURE_URI_PATH + "}");
+            context.getContentResolver().delete(uri, null, null);
+        }
+
     }
 
     /**
@@ -227,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if(!nameExists) {
-            foodList.add(new Food(newNoteName.getText().toString(), imageUri.toString()));
+            foodList.add(new Food(newNoteName.getText().toString(), imageUri.toString(), this));
             foodListAdapter.notifyItemInserted(foodListAdapter.getItemCount() - 1);
             Toast.makeText(getApplicationContext(),"created!",Toast.LENGTH_SHORT).show();
         }
@@ -237,7 +229,6 @@ public class MainActivity extends AppCompatActivity {
     public static class NewNoteDialogFragment extends DialogFragment {
         static final int MY_PERMISSIONS_REQUEST_CAMERA = 5656;
         static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 5757;
-        static final String DEFAULT_PICTURE_PATH = "android.resource://com.example.lucyzhao.notetaking/drawable/foodpic2";
         private View fragmentView;
         static final int TAKE_PICTURE = 115;
 
@@ -266,9 +257,11 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view){
                     ((MainActivity) getActivity()).newNoteName
                             = (EditText) fragmentView.findViewById(R.id.new_note_name);
-                    //transfer control back to the Fragment's host
+                    //transfer control back to the Fragment's host to check if the name
+                    //already exits
                     if(!((MainActivity) getActivity()).onDialogPositiveClick()) {
                         dismiss();
+                        //dismissDialog();
                     }
                 }
             });
@@ -277,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view){
                     deleteImageOnDevice(((MainActivity)getActivity()).imageUri, getActivity());
                     dismiss();
+                    //dismissDialog();
                 }
             });
 
@@ -291,12 +285,27 @@ public class MainActivity extends AppCompatActivity {
             return builder.create();
         }
 
+        /**
+         * Handles the effects of dismissing the dialog on MainActivity
+         * (calling onRestart)
+         * EDIT: dismissing the dialog does not call onRestart, returning
+         * from picture taking does
+         */
+        private void dismissDialog(){
+            Log.v(TAG, "in dismissing dialogue");
+            ((MainActivity) getActivity()).getCache = false;
+            Log.v(TAG, "dialog dismissing, getCache = " + ((MainActivity) getActivity()).getCache);
+            dismiss();
+        }
 
         private void takePicture(){
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             ((MainActivity)getActivity()).imageUri = createUri();
             intent.putExtra(MediaStore.EXTRA_OUTPUT, ((MainActivity)getActivity()).imageUri);
             startActivityForResult(intent, TAKE_PICTURE);
+
+            ((MainActivity) getActivity()).getCache = false;
+            Log.v(TAG, "leaving MainActivity, getCache = " + ((MainActivity) getActivity()).getCache);
         }
 
         /**

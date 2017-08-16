@@ -9,26 +9,37 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.Serializable;
 
-import static com.example.lucyzhao.notetaking.MainActivity.NewNoteDialogFragment.DEFAULT_PICTURE_PATH;
-import static java.security.AccessController.getContext;
+import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
 
 /**
  * Created by LucyZhao on 2016/10/29.
  */
  public class Food implements Serializable{
-    private final String title;
+    private String title;
     private final String imageUriString;
+    private final int id;
 
-    public Food( String title, String imageUriString ) {
+    public Food( String title, String imageUriString, Context context ) {
         this.title = title;
         this.imageUriString = imageUriString;
+
+        /* initialize a unique id for this food */
+        int lastIdNumber = Utils.getLastFoodId(context);
+        this.id = lastIdNumber + 1;
+        Utils.setLastFoodId(context, this.id);
     }
 
     public String getTitle(){
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getImageUriString() { return imageUriString; }
+
+    public int getId() { return id; }
 
     /**
      * similar to setImagePreview in MainActivity
