@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.preference.PreferenceManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import java.io.File;
@@ -17,6 +18,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
+import static java.security.AccessController.getContext;
 
 /**
  * Created by LucyZhao on 2017/8/15.
@@ -28,12 +30,22 @@ public class Utils {
     public static final String EXTRA_CLICKING_POSITION = "clicking_pos";
     public static final String EXTRA_FOOD_OBJECT = "food_object";
 
-    public static final String LIST_FILE_NAME = "food_list";
+
     public static final String CHILD_PATH_INGREDIENTS = "/ingredients";
     public static final String CHILD_PATH_PROCEDURE = "/procedure";
+    public static final String CHILD_PATH_INGREDIENTS_TEMP = "ingredientsss";
+
     public static final String DEFAULT_PICTURE_PATH = "android.resource://com.example.lucyzhao.notetaking/drawable/foodpic2";
     public static final String DEFAULT_PICTURE_URI_PATH = "/drawable/foodpic2";
     public static final String ID_KEY = "id_key";
+
+    public static final String ADD_INGREDIENT_FRAGMENT = "add_ingredient_frag";
+
+    public interface ListKeys {
+        String FOOD_LIST_KEY = "food_list";  //todo only this is useful
+        String INGREDIENT_LIST_KEY = "ingredient_list";
+        String PROCEDURE_LIST_KEY = "procedure_list";
+    }
 
     /**
      * Rotate the bitmap by certain degrees
@@ -68,7 +80,7 @@ public class Utils {
 
     public static void saveFoodList(Context context, ArrayList<Food> foodList) {
         try {
-            FileOutputStream fos = context.openFileOutput(LIST_FILE_NAME, MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(ListKeys.FOOD_LIST_KEY, MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
             objectOutputStream.writeObject(foodList);
             objectOutputStream.close();
@@ -83,7 +95,7 @@ public class Utils {
     public static ArrayList<Food> getCachedFoodList(Context context) {
         ArrayList<Food> foodList = null;
         try {
-            FileInputStream fis = context.openFileInput(LIST_FILE_NAME);
+            FileInputStream fis = context.openFileInput(ListKeys.FOOD_LIST_KEY);
             ObjectInputStream objectInputStream = new ObjectInputStream(fis);
             foodList = (ArrayList<Food>) objectInputStream.readObject();
             objectInputStream.close();
@@ -96,6 +108,54 @@ public class Utils {
             e.printStackTrace();
         }
         return foodList;
+    }
+
+    /**
+     *
+     * @param c
+     * @param list
+     * @param foldername
+     * @param filename
+     */
+    public static void saveList(Context c, ArrayList list, String foldername, String filename) {
+        try {
+            Log.v(TAG, "saving list");
+            File file = new File(c.getFilesDir().getPath() + "/" + foldername + "/" + filename);
+            if(!file.exists()){
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+            FileOutputStream fos = new FileOutputStream(file,false);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
+            objectOutputStream.writeObject(list);
+            objectOutputStream.close();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static ArrayList<Ingredient> getList(Context c, String foldername, String filename) {
+        Log.v(TAG, "getting list");
+        ArrayList list = null;
+        try {
+            FileInputStream fis = new FileInputStream (
+                    new File(c.getFilesDir().getPath() + "/" + foldername + "/" + filename));
+            ObjectInputStream objectInputStream = new ObjectInputStream(fis);
+            list = (ArrayList) objectInputStream.readObject();
+            objectInputStream.close();
+            fis.close();
+            Log.v(TAG, "fis closed");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public static int getLastFoodId(Context context) {
@@ -142,5 +202,10 @@ public class Utils {
         }
 
         fileOrDirectory.delete();
+    }
+
+    public static int dpToPx(Context c, int dp) {
+        DisplayMetrics displayMetrics = c.getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 }

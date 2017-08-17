@@ -1,18 +1,32 @@
 package com.example.lucyzhao.notetaking;
 
+
+
+
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.transition.Slide;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,14 +35,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
-import java.util.Stack;
 
 import static com.example.lucyzhao.notetaking.Utils.CHILD_PATH_INGREDIENTS;
 import static com.example.lucyzhao.notetaking.Utils.CHILD_PATH_PROCEDURE;
-import static com.example.lucyzhao.notetaking.Utils.LIST_FILE_NAME;
-import static com.example.lucyzhao.notetaking.Utils.getCachedFoodList;
+import static com.example.lucyzhao.notetaking.Utils.dpToPx;
 
 public class RecipePageActivity extends AppCompatActivity {
     private static final String TAG = RecipePageActivity.class.getSimpleName();
@@ -36,23 +47,21 @@ public class RecipePageActivity extends AppCompatActivity {
     EditText titleEt;
     EditText ingredientsEditText;
     EditText procedureEditText;
-    private String file_name;
+
+    ToggleButton addIngredientBtn;
+    private String folder_name;
     private String initial_title;
-
-    private float density;
-    /* ingredient fields */
-    private int ingredient_prevNumOfLines = 1;
-    private Stack<Integer> ingredient_bulletIds = new Stack<>();
-    /* procedure fields */
-    private int procedure_prevNumOfLines = 1;
-    private Stack<Integer> procedure_bulletIds = new Stack<>();
-
     private int clickingPos = -1;
+
+    private ArrayList<Ingredient> ingList = new ArrayList<>();
+    private IngredientsListAdapter ingListAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_page);
+        Log.v(TAG, "in onCreate");
 
         /* ------------ get intent --------------*/
         Intent intent = getIntent();
@@ -65,7 +74,7 @@ public class RecipePageActivity extends AppCompatActivity {
 
         /* ------------ set note page title ----------------*/
         String title = food.getTitle();
-        file_name = Integer.toString(food.getId());
+        folder_name = Integer.toString(food.getId());
         initial_title = title;
         titleEt = (EditText) findViewById(R.id.single_page_title);
         titleEt.setText(title);
@@ -76,9 +85,7 @@ public class RecipePageActivity extends AppCompatActivity {
 
         /* -------------find EditText contents -------------*/
         procedureEditText = (EditText) findViewById(R.id.procedure_edit_text);
-        ingredientsEditText = (EditText) findViewById(R.id.ingredients_edit_text);
-        final RelativeLayout ingredientsRL = (RelativeLayout) findViewById(R.id.ingredients_relative_layout);
-        final RelativeLayout procedureRL = (RelativeLayout) findViewById(R.id.procedure_relative_layout);
+        //ingredientsEditText = (EditText) findViewById(R.id.ingredients_edit_text);
         //read information saved in internal storage and displays it
         displayInfo();
 
@@ -86,96 +93,78 @@ public class RecipePageActivity extends AppCompatActivity {
         File file = getFilesDir();
         File[] listOfFiles = file.listFiles();
         for(File f : listOfFiles){
-            Log.v("internal str files", f.getAbsolutePath());
+            Log.v(TAG, "internal files: " + f.getAbsolutePath());
+            if(f.isDirectory()){
+                for(File child : f.listFiles()){
+                    Log.v(TAG, "child: " + child.getAbsolutePath());
+                }
+            }
         }
         /* ---------------test display all files-------------*/
 
+        /*--------- setting up ingredient list recycler view --------*/
+        ArrayList newIngList = Utils.getList(this, folder_name, Utils.CHILD_PATH_INGREDIENTS_TEMP);
 
-        /* ----------deal with ingredients edit text----------*/
-        density = getApplicationContext().getResources().getDisplayMetrics().density;
-        ingredient_bulletIds.push(R.id.first_bullet);
+        if(newIngList != null && !newIngList.isEmpty() && newIngList.get(0) instanceof Ingredient){
+            ingList = (ArrayList<Ingredient>) newIngList;
+        }
 
-        ingredientsEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+        ingListAdapter = new IngredientsListAdapter(ingList);
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int numOfLines = ingredientsEditText.getLineCount();
-                Log.v("line num", numOfLines+" lines");
-                if(numOfLines > ingredient_prevNumOfLines){
-                    RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                   // lp.setMarginStart((int)(10*density));
-                    lp.addRule(RelativeLayout.BELOW, ingredient_bulletIds.peek());
-                    lp.addRule(RelativeLayout.ALIGN_START, ingredient_bulletIds.peek());
-                    lp.width = (int)(10*density);
-                    lp.height = (int)(10*density);
-                    lp.topMargin = (int)(ingredientsEditText.getTextSize() + ingredientsEditText.getLineSpacingExtra() - lp.height/2 -8 );
+        RecyclerView recyclerView;
+        recyclerView = (RecyclerView) findViewById(R.id.ingredients_recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-                    ImageView bullet = new ImageView(RecipePageActivity.this);
-                    bullet.setBackgroundResource(R.drawable.dot);
-                    bullet.setLayoutParams(lp);
-                    int lastBulletId = View.generateViewId();
-                    ingredient_bulletIds.push(lastBulletId);
-                    bullet.setId(lastBulletId);
-                    ingredientsRL.addView(bullet);
+        recyclerView.setAdapter(ingListAdapter);
+
+        recyclerView.addItemDecoration(new DividerItemDecoration(this,
+                DividerItemDecoration.VERTICAL));
+
+        /* --------- setting up add ingredient button ---------------*/
+        addIngredientBtn = (ToggleButton) findViewById(R.id.add_ingredient_button);
+
+//        addIngredientBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //addNewIngredient();
+//                FragmentManager fragmentManager = getFragmentManager();
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                NewIngredientFragment fragment = new NewIngredientFragment();
+//                fragment.setEnterTransition(new Slide(Gravity.RIGHT));
+//                fragmentTransaction.add(R.id.add_ingredient_container, fragment);
+//                fragmentTransaction.commit();
+//            }
+//
+//        });
+        addIngredientBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    //addNewIngredient();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    Fragment fragment = new NewIngredientFragment();
+                    //fragment.setEnterTransition(new Slide(Gravity.RIGHT));
+
+                    fragmentTransaction.setCustomAnimations(
+                            R.anim.enter_from_right,
+                            R.anim.exit_from_left,
+                            R.anim.enter_from_right,
+                            R.anim.exit_from_left
+                    );
+                    fragmentTransaction.add(R.id.add_ingredient_container, fragment);
+                    fragmentTransaction.addToBackStack(Utils.ADD_INGREDIENT_FRAGMENT);
+                    fragmentTransaction.commit();
+
+                } else {
+                    // The toggle is disabled
+
+                    getSupportFragmentManager().popBackStack(); //TODO there maybe more fragments
+                                                         //TODO we'll consider that later
+//                    Fragment fragment = getFragmentManager().findFragmentById(R.id.add_ingredient_container);
+//                    getFragmentManager().beginTransaction().remove(fragment).commit();
+
                 }
-                else if(numOfLines < ingredient_prevNumOfLines){
-                    View bullet = ingredientsRL.findViewById(ingredient_bulletIds.peek());
-                    ingredientsRL.removeView(bullet);
-                    ingredient_bulletIds.pop();
-                }
-                ingredient_prevNumOfLines = numOfLines;
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        procedure_bulletIds.push(R.id.second_bullet);
-        procedureEditText.addTextChangedListener(new TextWatcher(){
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int numOfLines = procedureEditText.getLineCount();
-                Log.v("line num", numOfLines+" lines");
-                if(numOfLines > procedure_prevNumOfLines){
-                    RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    // lp.setMarginStart((int)(10*density));
-                    lp.addRule(RelativeLayout.BELOW, procedure_bulletIds.peek());
-                    lp.addRule(RelativeLayout.ALIGN_START, procedure_bulletIds.peek());
-                    lp.width = (int)(10*density);
-                    lp.height = (int)(10*density);
-                    lp.topMargin = (int)(procedureEditText.getTextSize() + procedureEditText.getLineSpacingExtra() - lp.height/2 -8 );
-
-                    ImageView bullet = new ImageView(RecipePageActivity.this);
-                    bullet.setBackgroundResource(R.drawable.dot);
-                    bullet.setLayoutParams(lp);
-                    int lastBulletId = View.generateViewId();
-                    procedure_bulletIds.push(lastBulletId);
-                    bullet.setId(lastBulletId);
-                    procedureRL.addView(bullet);
-                }
-                else if(numOfLines < procedure_prevNumOfLines){
-                    View bullet = procedureRL.findViewById(procedure_bulletIds.peek());
-                    procedureRL.removeView(bullet);
-                    procedure_bulletIds.pop();
-                }
-                procedure_prevNumOfLines = numOfLines;
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
             }
         });
     }
@@ -184,12 +173,20 @@ public class RecipePageActivity extends AppCompatActivity {
     protected void onStop(){
         super.onStop();
         Log.v(TAG, "in onStop");
+        Utils.saveList(this, ingList, folder_name, Utils.CHILD_PATH_INGREDIENTS_TEMP);
     }
+
 
     @Override
     protected void onRestart(){
         super.onRestart();
         Log.v(TAG, "in onRestart");
+    }
+
+    private void addNewIngredient(Ingredient ingredient){
+        ingList.add(ingredient);
+        Log.v(TAG, "item count in list is: " + ingListAdapter.getItemCount());
+        ingListAdapter.notifyItemInserted(ingListAdapter.getItemCount() - 1);
     }
 
 
@@ -219,7 +216,7 @@ public class RecipePageActivity extends AppCompatActivity {
     }
 
     public void displayInfo(){
-        retrieveFromFolder(ingredientsEditText, CHILD_PATH_INGREDIENTS);
+//        retrieveFromFolder(ingredientsEditText, CHILD_PATH_INGREDIENTS);
         retrieveFromFolder(procedureEditText, CHILD_PATH_PROCEDURE);
     }
 
@@ -231,7 +228,7 @@ public class RecipePageActivity extends AppCompatActivity {
     private void saveToFolder(EditText editText, String folder_name){
         String textToSave = editText.getText().toString();
         try {
-            File file = new File(getFilesDir().getPath() + "/" + file_name + folder_name);
+            File file = new File(getFilesDir().getPath() + "/" + this.folder_name + folder_name);
             if(!file.exists()){
                 boolean result = file.getParentFile().mkdirs();
                 Log.v(TAG, Boolean.toString(result));
@@ -257,7 +254,7 @@ public class RecipePageActivity extends AppCompatActivity {
     private void retrieveFromFolder(EditText editText, String folder_name) {
         String savedInfo;
         try {
-            FileInputStream fis = new FileInputStream (new File(getFilesDir().getPath() + "/" + file_name + folder_name));
+            FileInputStream fis = new FileInputStream (new File(getFilesDir().getPath() + "/" + this.folder_name + folder_name));
             BufferedReader bufferedReader
                     = new BufferedReader(new InputStreamReader(fis));
             StringBuffer stringBuffer = new StringBuffer();
@@ -272,5 +269,35 @@ public class RecipePageActivity extends AppCompatActivity {
         }
     }
 
+    public static class NewIngredientFragment extends Fragment{
+        Button okButton;
+        EditText name;
+        EditText amount;
+        EditText unit;
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            // Inflate the layout for this fragment
+            View fragmentView = inflater.inflate(R.layout.add_new_ingredient_fragment, container, false);
+            name = (EditText) fragmentView.findViewById(R.id.new_name);
+            amount = (EditText) fragmentView.findViewById(R.id.new_amount);
+            unit = (EditText) fragmentView.findViewById(R.id.new_unit);
+
+            okButton = (Button) fragmentView.findViewById(R.id.ok_button);
+            okButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String ingName = name.getText().toString();
+                    int ingAmount = Integer.parseInt(amount.getText().toString());
+                    String ingUnit = unit.getText().toString();
+                    Ingredient ing = new Ingredient(ingName, ingAmount, ingUnit);
+                    ((RecipePageActivity) getActivity()).addNewIngredient(ing);
+                    ((RecipePageActivity) getActivity()).addIngredientBtn.toggle();
+                }
+            });
+            return fragmentView;
+        }
+    }
 
 }
