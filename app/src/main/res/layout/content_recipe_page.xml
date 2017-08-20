@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:scrollbars="none"
     android:overScrollMode="never"
 
@@ -54,44 +54,47 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="100dp"
             android:id="@+id/ingredients_linear_layout"
             android:layout_alignParentStart="true">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/add_ingredient_button_container">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="INGREDIENTS"
-                    android:layout_centerVertical="true"
-                    />
-                <ToggleButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textOff="add"
-                    android:textOn="cancel"
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/add_ingredient_button"
-                    />
 
-            </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="INGREDIENTS"
+                />
+
 
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:id="@+id/ingredients_recyclerView"
                 android:background="@drawable/dotted_shape"
                 android:layout_height="wrap_content"
-                android:overScrollMode="never"/>
+                />
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:id="@+id/add_ingredient_container"
-                />
+                android:layout_height="wrap_content">
+                <ToggleButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textOff="add"
+                    android:textOn="cancel"
+                    android:layout_alignParentStart="true"
+                    android:id="@+id/add_ingredient_button"
+                    android:layout_centerVertical="true"
+                    />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_toEndOf="@+id/add_ingredient_button"
+                    android:id="@+id/add_ingredient_container"
+                    />
+            </RelativeLayout>
+
+
 
         </LinearLayout>
 
@@ -131,6 +134,6 @@
     </LinearLayout>
 
 
-</ScrollView>
+</android.support.v4.widget.NestedScrollView>
 
 

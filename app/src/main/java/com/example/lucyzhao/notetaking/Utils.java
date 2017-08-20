@@ -30,10 +30,10 @@ public class Utils {
     public static final String EXTRA_CLICKING_POSITION = "clicking_pos";
     public static final String EXTRA_FOOD_OBJECT = "food_object";
 
+    public static final String FOOD_LIST_KEY = "food_list";
 
-    public static final String CHILD_PATH_INGREDIENTS = "/ingredients";
-    public static final String CHILD_PATH_PROCEDURE = "/procedure";
-    public static final String CHILD_PATH_INGREDIENTS_TEMP = "ingredientsss";
+    public static final String CHILD_PATH_INGREDIENTS = "ingredients";
+    public static final String CHILD_PATH_PROCEDURE = "procedure";
 
     public static final String DEFAULT_PICTURE_PATH = "android.resource://com.example.lucyzhao.notetaking/drawable/foodpic2";
     public static final String DEFAULT_PICTURE_URI_PATH = "/drawable/foodpic2";
@@ -41,11 +41,6 @@ public class Utils {
 
     public static final String ADD_INGREDIENT_FRAGMENT = "add_ingredient_frag";
 
-    public interface ListKeys {
-        String FOOD_LIST_KEY = "food_list";  //todo only this is useful
-        String INGREDIENT_LIST_KEY = "ingredient_list";
-        String PROCEDURE_LIST_KEY = "procedure_list";
-    }
 
     /**
      * Rotate the bitmap by certain degrees
@@ -80,7 +75,7 @@ public class Utils {
 
     public static void saveFoodList(Context context, ArrayList<Food> foodList) {
         try {
-            FileOutputStream fos = context.openFileOutput(ListKeys.FOOD_LIST_KEY, MODE_PRIVATE);
+            FileOutputStream fos = context.openFileOutput(FOOD_LIST_KEY, MODE_PRIVATE);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
             objectOutputStream.writeObject(foodList);
             objectOutputStream.close();
@@ -95,7 +90,7 @@ public class Utils {
     public static ArrayList<Food> getCachedFoodList(Context context) {
         ArrayList<Food> foodList = null;
         try {
-            FileInputStream fis = context.openFileInput(ListKeys.FOOD_LIST_KEY);
+            FileInputStream fis = context.openFileInput(FOOD_LIST_KEY);
             ObjectInputStream objectInputStream = new ObjectInputStream(fis);
             foodList = (ArrayList<Food>) objectInputStream.readObject();
             objectInputStream.close();

@@ -1,12 +1,13 @@
 package com.example.lucyzhao.notetaking;
 
-import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
+import android.widget.EditText;
+
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,35 +19,44 @@ import java.util.ArrayList;
 public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsListAdapter.ViewHolder> {
     private ArrayList<Ingredient> ingredientList;
 
-    public IngredientsListAdapter(ArrayList<Ingredient> ingredient_list){
+    public IngredientsListAdapter(ArrayList<Ingredient> ingredient_list) {
         this.ingredientList = ingredient_list;
     }
 
 
     /**
-     * Create new views (invoked by the layout manager)
+     * Create a new view when there is no recycled views available
+     * Invoked if nothing is ever deleted from the list
+     * (invoked by the layout manager)
      */
     @Override
     public IngredientsListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                         int viewType) {
-        // create a new view
+                                                                int viewType) {
+        // inflates the layout for a single item created in res
         View itemLayoutView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.ingredient_single_list_item, null);
 
+        // instantiates a new view created from the single item layout
         return new IngredientsListAdapter.ViewHolder(itemLayoutView);
     }
 
     /**
-     * Replace the contents of a view (invoked by the layout manager)
+     * Replace the contents of a recycled view with the new view
+     * Invoked if items have been deleted from the list
+     * (invoked by the layout manager)
      */
     @Override
     public void onBindViewHolder(IngredientsListAdapter.ViewHolder viewHolder, int position) {
 
         // - get data from your itemsData at this position
         // - replace the contents of the view with that itemsData
-        viewHolder.name.setText(ingredientList.get(position).getName());
-        viewHolder.amount.setText(Integer.toString(ingredientList.get(position).getAmount()));
-        viewHolder.unit.setText(ingredientList.get(position).getUnit());
+        viewHolder.name_tv.setText(ingredientList.get(position).getName());
+        viewHolder.amount_tv.setText(Integer.toString(ingredientList.get(position).getAmount()));
+        viewHolder.unit_tv.setText(ingredientList.get(position).getUnit());
+
+        // hides edit text for recycled views
+        viewHolder.isInEditMode(false);
+
     }
 
 
@@ -55,30 +65,125 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
         return ingredientList.size();
     }
 
-    public void updateInnerList(ArrayList<Ingredient> newIngList){
+    public void updateInnerList(ArrayList<Ingredient> newIngList) {
         this.ingredientList = newIngList;
         this.notifyDataSetChanged();
     }
 
+
     // inner class to hold a reference to each item of RecyclerView
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+        private final String TAG = ViewHolder.class.getSimpleName();
+        public final EditText name;
+        public EditText amount;
+        public EditText unit;
+        public Button edit_ok;
+        public Button edit_delete;
 
-        public TextView name;
-        public TextView amount;
-        public TextView unit;
+        public TextView name_tv;
+        public TextView amount_tv;
+        public TextView unit_tv;
 
-        public ViewHolder(View itemLayoutView) {
+        /**
+         * Instantiates a new view
+         *
+         * @param itemLayoutView
+         */
+        public ViewHolder(final View itemLayoutView) {
             super(itemLayoutView);
-            name = (TextView) itemLayoutView.findViewById(R.id.ingredient_name);
-            amount = (TextView) itemLayoutView.findViewById(R.id.ingredient_amount);
-            unit = (TextView) itemLayoutView.findViewById(R.id.ingredient_unit);
+            Log.v(TAG, "instantiating a new viewholder");
+
+            name = (EditText) itemLayoutView.findViewById(R.id.ingredient_name);
+            amount = (EditText) itemLayoutView.findViewById(R.id.ingredient_amount);
+            unit = (EditText) itemLayoutView.findViewById(R.id.ingredient_unit);
+            edit_ok = (Button) itemLayoutView.findViewById(R.id.edit_ok);
+            edit_delete = (Button) itemLayoutView.findViewById(R.id.edit_delete);
+
+            name_tv = (TextView) itemLayoutView.findViewById(R.id.ingredient_name_tv);
+            amount_tv = (TextView) itemLayoutView.findViewById(R.id.ingredient_amount_tv);
+            unit_tv = (TextView) itemLayoutView.findViewById(R.id.ingredient_unit_tv);
+
+            /*
+            hides the edit text
+            textview shows by default
+             */
+            isInEditMode(false);
+
+
+            // configures clicking events for recycler view
+            itemLayoutView.setClickable(true);
+
+            itemLayoutView.setOnClickListener(this);
+            itemLayoutView.setOnLongClickListener(this);
+
+            // configures clicking events for finishing an edit and deleting an item
+            edit_ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.v(TAG, "edit ok on click");
+                    String new_name = name.getText().toString();
+                    int new_amount = Integer.parseInt(amount.getText().toString());
+                    String new_unit = unit.getText().toString();
+                    Ingredient new_ing = new Ingredient(new_name, new_amount, new_unit);
+                    ingredientList.remove(getAdapterPosition());
+                    ingredientList.add(getAdapterPosition(), new_ing);
+                    notifyItemChanged(getAdapterPosition());
+                }
+            });
+
+            edit_delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.v(TAG, "edit delete on click");
+                    ingredientList.remove(getAdapterPosition());
+                    notifyItemRemoved(getAdapterPosition());
+                }
+            });
         }
 
         @Override
         public void onClick(View view) {
-
+            isInEditMode(false);
         }
 
+        @Override
+        public boolean onLongClick(View v) {
+            Log.v(TAG, "onLongClick at adapter pos: " + getAdapterPosition() + "|| ingredient is: " + ingredientList.get(getAdapterPosition()).toString());
+            isInEditMode(true);
+
+            name.setText(name_tv.getText().toString());
+            amount.setText(amount_tv.getText().toString());
+            unit.setText(unit_tv.getText().toString());
+
+            return true;
+        }
+
+        private void isInEditMode(boolean inEditMode) {
+            if (inEditMode) {
+                setTextViewVisibility(View.INVISIBLE);
+                setEditModeVisibility(View.VISIBLE);
+            } else {
+                setTextViewVisibility(View.VISIBLE);
+                setEditModeVisibility(View.GONE);
+            }
+        }
+
+        private void setEditModeVisibility(int visibility) {
+            name.setVisibility(visibility);
+            amount.setVisibility(visibility);
+            unit.setVisibility(visibility);
+            edit_ok.setVisibility(visibility);
+            edit_delete.setVisibility(visibility);
+        }
+
+        private void setTextViewVisibility(int visibility) {
+            name_tv.setVisibility(visibility);
+            amount_tv.setVisibility(visibility);
+            unit_tv.setVisibility(visibility);
+        }
+
+
     }
+
 
 }

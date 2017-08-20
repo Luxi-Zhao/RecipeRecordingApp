@@ -45,7 +45,8 @@
         <activity
             android:name=".RecipePageActivity"
             android:label="@string/title_activity_recipe_page"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>

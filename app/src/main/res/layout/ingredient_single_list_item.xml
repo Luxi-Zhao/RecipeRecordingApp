@@ -1,40 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <EditText
         android:id="@+id/ingredient_name"
-        android:hint="name"
-        android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="15dp"
         android:layout_marginStart="15dp"
         android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"/>
+        android:inputType="text"
+        android:hint=""
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/ingredient_unit"
-        android:hint="unit"
-        android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_toStartOf="@+id/edit_ok"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="15dp"/>
+        android:layout_margin="15dp"
+        android:inputType="text"
+        android:hint=""
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/ingredient_amount"
-        android:hint="0"
-        android:inputType="numberDecimal"
-        android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/ingredient_unit"
+        android:layout_marginBottom="15dp"
         android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"/>
+        android:layout_toStartOf="@+id/ingredient_unit"
+        android:inputType="numberDecimal"
+        android:hint=""
+        android:textSize="20sp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/edit_ok"
+        android:text="ok"
+        android:layout_toStartOf="@+id/edit_delete"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/edit_delete"
+        android:text="delete"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/ingredient_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:textColor="#050505"
+        android:layout_marginBottom="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/ingredient_unit_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="15dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/ingredient_amount_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_toStartOf="@+id/ingredient_unit_tv"
+        android:textSize="20sp" />
 
 </RelativeLayout>

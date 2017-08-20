@@ -45,8 +45,6 @@ public class RecipePageActivity extends AppCompatActivity {
     private static final String TAG = RecipePageActivity.class.getSimpleName();
 
     EditText titleEt;
-    EditText ingredientsEditText;
-    EditText procedureEditText;
 
     ToggleButton addIngredientBtn;
     private String folder_name;
@@ -83,11 +81,6 @@ public class RecipePageActivity extends AppCompatActivity {
         ImageView foodPic = (ImageView) findViewById(R.id.single_page_foodpicture);
         foodPic.setImageBitmap(food.getImage(this));
 
-        /* -------------find EditText contents -------------*/
-        procedureEditText = (EditText) findViewById(R.id.procedure_edit_text);
-        //ingredientsEditText = (EditText) findViewById(R.id.ingredients_edit_text);
-        //read information saved in internal storage and displays it
-        displayInfo();
 
         /* ---------------TODO delete test display all files-------------*/
         File file = getFilesDir();
@@ -103,7 +96,7 @@ public class RecipePageActivity extends AppCompatActivity {
         /* ---------------test display all files-------------*/
 
         /*--------- setting up ingredient list recycler view --------*/
-        ArrayList newIngList = Utils.getList(this, folder_name, Utils.CHILD_PATH_INGREDIENTS_TEMP);
+        ArrayList newIngList = Utils.getList(this, folder_name, Utils.CHILD_PATH_INGREDIENTS);
 
         if(newIngList != null && !newIngList.isEmpty() && newIngList.get(0) instanceof Ingredient){
             ingList = (ArrayList<Ingredient>) newIngList;
@@ -113,6 +106,12 @@ public class RecipePageActivity extends AppCompatActivity {
 
         RecyclerView recyclerView;
         recyclerView = (RecyclerView) findViewById(R.id.ingredients_recyclerView);
+//        recyclerView.setLayoutManager(new LinearLayoutManager(this){
+//            @Override
+//            public boolean canScrollVertically() {
+//                return false;
+//            }  //disable recycler view scrolling
+//        });
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         recyclerView.setAdapter(ingListAdapter);
@@ -122,25 +121,10 @@ public class RecipePageActivity extends AppCompatActivity {
 
         /* --------- setting up add ingredient button ---------------*/
         addIngredientBtn = (ToggleButton) findViewById(R.id.add_ingredient_button);
-
-//        addIngredientBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //addNewIngredient();
-//                FragmentManager fragmentManager = getFragmentManager();
-//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                NewIngredientFragment fragment = new NewIngredientFragment();
-//                fragment.setEnterTransition(new Slide(Gravity.RIGHT));
-//                fragmentTransaction.add(R.id.add_ingredient_container, fragment);
-//                fragmentTransaction.commit();
-//            }
-//
-//        });
         addIngredientBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // The toggle is enabled
-                    //addNewIngredient();
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     Fragment fragment = new NewIngredientFragment();
@@ -148,9 +132,9 @@ public class RecipePageActivity extends AppCompatActivity {
 
                     fragmentTransaction.setCustomAnimations(
                             R.anim.enter_from_right,
-                            R.anim.exit_from_left,
+                            android.R.anim.slide_out_right,
                             R.anim.enter_from_right,
-                            R.anim.exit_from_left
+                            android.R.anim.slide_out_right
                     );
                     fragmentTransaction.add(R.id.add_ingredient_container, fragment);
                     fragmentTransaction.addToBackStack(Utils.ADD_INGREDIENT_FRAGMENT);
@@ -173,7 +157,7 @@ public class RecipePageActivity extends AppCompatActivity {
     protected void onStop(){
         super.onStop();
         Log.v(TAG, "in onStop");
-        Utils.saveList(this, ingList, folder_name, Utils.CHILD_PATH_INGREDIENTS_TEMP);
+        Utils.saveList(this, ingList, folder_name, Utils.CHILD_PATH_INGREDIENTS);
     }
 
 
@@ -184,20 +168,22 @@ public class RecipePageActivity extends AppCompatActivity {
     }
 
     private void addNewIngredient(Ingredient ingredient){
+        Log.v(TAG, "adding new ingredient " + ingredient.toString());
         ingList.add(ingredient);
-        Log.v(TAG, "item count in list is: " + ingListAdapter.getItemCount());
         ingListAdapter.notifyItemInserted(ingListAdapter.getItemCount() - 1);
+        Log.v(TAG, "notified item inserted at pos: " + (ingListAdapter.getItemCount()-1));
     }
 
 
     /**
-     * save user input 
+     * save user input
+     * TODO move the logic to onStop
+     * TODO edit this logic so that it only shows edit text when the user clicks on it
      * @param view
      */
     public void saveInfo(View view){
-        saveToFolder(ingredientsEditText, CHILD_PATH_INGREDIENTS);
-        saveToFolder(procedureEditText, CHILD_PATH_PROCEDURE);
 
+        // save food list in case of title change
         String cur_title = titleEt.getText().toString();
         if(!cur_title.equals(initial_title)){
            Log.v(TAG, "title is edited");
@@ -215,59 +201,6 @@ public class RecipePageActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(),"input saved",Toast.LENGTH_LONG).show();
     }
 
-    public void displayInfo(){
-//        retrieveFromFolder(ingredientsEditText, CHILD_PATH_INGREDIENTS);
-        retrieveFromFolder(procedureEditText, CHILD_PATH_PROCEDURE);
-    }
-
-    /**
-     * Helper method that converts an EditText to a string and saves the string to a folder
-     * @param editText the EditText to retrieve the string from
-     * @param folder_name the folder to save to
-     */
-    private void saveToFolder(EditText editText, String folder_name){
-        String textToSave = editText.getText().toString();
-        try {
-            File file = new File(getFilesDir().getPath() + "/" + this.folder_name + folder_name);
-            if(!file.exists()){
-                boolean result = file.getParentFile().mkdirs();
-                Log.v(TAG, Boolean.toString(result));
-                boolean file_result = file.createNewFile();
-                Log.v(TAG, "result for creating a new file: " + Boolean.toString(file_result));
-            }
-            FileOutputStream fos = new FileOutputStream(file, true);
-            fos.write(textToSave.getBytes());
-            fos.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Helper method that retrieves a saved string from a folder and sets an EditText to
-     * the retrieved string
-     * @param editText the EditText to set
-     * @param folder_name the folder to retrieve from
-     */
-    private void retrieveFromFolder(EditText editText, String folder_name) {
-        String savedInfo;
-        try {
-            FileInputStream fis = new FileInputStream (new File(getFilesDir().getPath() + "/" + this.folder_name + folder_name));
-            BufferedReader bufferedReader
-                    = new BufferedReader(new InputStreamReader(fis));
-            StringBuffer stringBuffer = new StringBuffer();
-            while((savedInfo = bufferedReader.readLine()) != null ) {
-                stringBuffer.append(savedInfo + "\n");
-            }
-            editText.setText(stringBuffer.toString());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public static class NewIngredientFragment extends Fragment{
         Button okButton;
