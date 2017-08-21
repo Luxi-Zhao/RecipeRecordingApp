@@ -40,6 +40,7 @@ public class Utils {
     public static final String ID_KEY = "id_key";
 
     public static final String ADD_INGREDIENT_FRAGMENT = "add_ingredient_frag";
+    public static final String ADD_PROCEDURE_FRAGMENT = "add_proc_frag";
 
 
     /**

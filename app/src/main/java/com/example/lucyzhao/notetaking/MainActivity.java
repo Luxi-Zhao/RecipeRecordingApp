@@ -74,9 +74,6 @@ public class MainActivity extends AppCompatActivity {
         foodListAdapter = new FoodListAdapter(foodList, getApplicationContext());
         recyclerView.setAdapter(foodListAdapter);
 
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,
-                DividerItemDecoration.VERTICAL));
-
         /*---------------detecting swipe motion--------------------*/
         ItemTouchHelper mIth = new ItemTouchHelper(
                 new ItemTouchHelper.Callback() {

@@ -1,30 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:contentPadding="10dp"
+    app:cardCornerRadius="4sp"
+    android:layout_margin="5dp"
+    app:cardElevation="2dp"
+    app:cardUseCompatPadding="true"
+    app:cardPreventCornerOverlap="true"
+    android:padding="10dp">
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:id="@+id/foodpicture"
-        android:src="@drawable/foodpic2"
-        android:layout_marginRight="700dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"/>
-
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/title"
-        android:text="Title"
-        android:textSize="30dp"
-        android:layout_marginRight="80dp"
-        android:layout_marginLeft="70dp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:layout_alignBottom="@+id/foodpicture"
-        android:layout_centerHorizontal="true" />
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/foodpicture"
+            android:src="@drawable/foodpic2"
+            android:layout_marginRight="700dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"/>
 
-</RelativeLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/title"
+            android:text="Title"
+            android:textSize="30dp"
+            android:layout_marginRight="80dp"
+            android:layout_marginLeft="70dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:layout_alignBottom="@+id/foodpicture"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
+
+
+</android.support.v7.widget.CardView>

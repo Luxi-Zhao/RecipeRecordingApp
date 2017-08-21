@@ -47,12 +47,16 @@ public class RecipePageActivity extends AppCompatActivity {
     EditText titleEt;
 
     ToggleButton addIngredientBtn;
+    ToggleButton addProcedureBtn;
     private String folder_name;
     private String initial_title;
     private int clickingPos = -1;
 
     private ArrayList<Ingredient> ingList = new ArrayList<>();
     private IngredientsListAdapter ingListAdapter;
+
+    private ArrayList<String> prList = new ArrayList<>();
+    private ProcedureListAdapter prListAdapter;
 
 
     @Override
@@ -95,6 +99,50 @@ public class RecipePageActivity extends AppCompatActivity {
         }
         /* ---------------test display all files-------------*/
 
+
+        /* -------- setting up procedure list recycler view ---------*/
+
+        ArrayList newPrList = Utils.getList(this, folder_name, Utils.CHILD_PATH_PROCEDURE);
+
+        if(newPrList != null && !newPrList.isEmpty() && newPrList.get(0) instanceof String){
+            prList = (ArrayList<String>) newPrList;
+        }
+
+        prListAdapter = new ProcedureListAdapter(prList);
+
+        RecyclerView prRecyclerView = (RecyclerView) findViewById(R.id.procedure_recyclerView);
+        prRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        prRecyclerView.setAdapter(prListAdapter);
+
+        /* -------- setting up add procedure button -----------------*/
+        addProcedureBtn = (ToggleButton) findViewById(R.id.add_procedure_button);
+        addProcedureBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    // The toggle is enabled
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    Fragment fragment = new NewProcedureFragment();
+
+                    fragmentTransaction.setCustomAnimations(
+                            R.anim.enter_from_right,
+                            R.anim.exit_from_left,
+                            R.anim.enter_from_right,
+                            R.anim.exit_from_left
+                    );
+                    fragmentTransaction.add(R.id.add_procedure_container, fragment);
+                    fragmentTransaction.addToBackStack(Utils.ADD_PROCEDURE_FRAGMENT);
+                    fragmentTransaction.commit();
+                }
+                else{
+                    getSupportFragmentManager().popBackStack(); //TODO there maybe more fragments
+                    //TODO we'll consider that later
+                }
+            }
+        });
+
         /*--------- setting up ingredient list recycler view --------*/
         ArrayList newIngList = Utils.getList(this, folder_name, Utils.CHILD_PATH_INGREDIENTS);
 
@@ -104,24 +152,24 @@ public class RecipePageActivity extends AppCompatActivity {
 
         ingListAdapter = new IngredientsListAdapter(ingList);
 
-        RecyclerView recyclerView;
-        recyclerView = (RecyclerView) findViewById(R.id.ingredients_recyclerView);
+        RecyclerView ingRecyclerView = (RecyclerView) findViewById(R.id.ingredients_recyclerView);
 //        recyclerView.setLayoutManager(new LinearLayoutManager(this){
 //            @Override
 //            public boolean canScrollVertically() {
 //                return false;
 //            }  //disable recycler view scrolling
 //        });
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        ingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        recyclerView.setAdapter(ingListAdapter);
+        ingRecyclerView.setAdapter(ingListAdapter);
 
-        recyclerView.addItemDecoration(new DividerItemDecoration(this,
+        ingRecyclerView.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
 
         /* --------- setting up add ingredient button ---------------*/
         addIngredientBtn = (ToggleButton) findViewById(R.id.add_ingredient_button);
         addIngredientBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+            @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     // The toggle is enabled
@@ -158,6 +206,7 @@ public class RecipePageActivity extends AppCompatActivity {
         super.onStop();
         Log.v(TAG, "in onStop");
         Utils.saveList(this, ingList, folder_name, Utils.CHILD_PATH_INGREDIENTS);
+        Utils.saveList(this, prList, folder_name, Utils.CHILD_PATH_PROCEDURE);
     }
 
 
@@ -172,6 +221,13 @@ public class RecipePageActivity extends AppCompatActivity {
         ingList.add(ingredient);
         ingListAdapter.notifyItemInserted(ingListAdapter.getItemCount() - 1);
         Log.v(TAG, "notified item inserted at pos: " + (ingListAdapter.getItemCount()-1));
+    }
+
+    private void addNewProcedure(String text){
+        Log.v(TAG, "adding new procedure " + text);
+        prList.add(text);
+        prListAdapter.notifyItemInserted(prListAdapter.getItemCount() - 1);
+        Log.v(TAG, "notified item inserted at pos: " + (prListAdapter.getItemCount()-1));
     }
 
 
@@ -227,6 +283,29 @@ public class RecipePageActivity extends AppCompatActivity {
                     Ingredient ing = new Ingredient(ingName, ingAmount, ingUnit);
                     ((RecipePageActivity) getActivity()).addNewIngredient(ing);
                     ((RecipePageActivity) getActivity()).addIngredientBtn.toggle();
+                }
+            });
+            return fragmentView;
+        }
+    }
+
+    public static class NewProcedureFragment extends Fragment{
+        Button okButton;
+        EditText text;
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            // Inflate the layout for this fragment
+            View fragmentView = inflater.inflate(R.layout.add_new_procedure_fragment, container, false);
+            text = (EditText) fragmentView.findViewById(R.id.new_procedure);
+
+            okButton = (Button) fragmentView.findViewById(R.id.new_procedure_ok_button);
+            okButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((RecipePageActivity) getActivity()).addNewProcedure(text.getText().toString());
+                    ((RecipePageActivity) getActivity()).addProcedureBtn.toggle();
                 }
             });
             return fragmentView;
