@@ -47,10 +47,11 @@ import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
      * Process the Bitmap to make it point to the right direction
      * if the picture is taken from the camera; if it's the default
      * picture, use it directly
+     * TODO use glide
      * @param context The context in which this method is used
      * @return
      */
-    public Bitmap getImage(Context context) {
+    public Bitmap getImage(Context context, boolean square) {
         Uri imageUri = Uri.parse(imageUriString);
         Bitmap originalBitmap = null;
         try {
@@ -61,8 +62,13 @@ import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
             e.printStackTrace();
         }
         /* TODO note: CHANGED FROM 90 TO 0 ON REAL DEVICE*/
-        if(imageUriString.equals(DEFAULT_PICTURE_PATH))
-            return originalBitmap;
-        else return Utils.processBitmap(originalBitmap);
+        if(imageUriString.equals(DEFAULT_PICTURE_PATH)){
+            Bitmap.Config conf = Bitmap.Config.ARGB_4444; // see other conf types
+            return Bitmap.createBitmap(1, 1, conf); // this creates a MUTABLE bitmap
+        }
+        else if(square){
+            return Utils.processBitmap(originalBitmap);
+        }
+        else return originalBitmap;
     }
 }

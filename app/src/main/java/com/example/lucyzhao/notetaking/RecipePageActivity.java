@@ -12,39 +12,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-
-import static com.example.lucyzhao.notetaking.Utils.CHILD_PATH_INGREDIENTS;
-import static com.example.lucyzhao.notetaking.Utils.CHILD_PATH_PROCEDURE;
-import static com.example.lucyzhao.notetaking.Utils.dpToPx;
 
 public class RecipePageActivity extends AppCompatActivity {
     private static final String TAG = RecipePageActivity.class.getSimpleName();
 
     EditText titleEt;
+    TextView titleTv;
+    Button titleOk;
 
     ToggleButton addIngredientBtn;
     ToggleButton addProcedureBtn;
@@ -75,15 +64,41 @@ public class RecipePageActivity extends AppCompatActivity {
         Log.v(TAG, "food info: id " + food.getId());
 
         /* ------------ set note page title ----------------*/
-        String title = food.getTitle();
+        final String title = food.getTitle();
         folder_name = Integer.toString(food.getId());
         initial_title = title;
+        titleOk = (Button) findViewById(R.id.title_ok_button);
         titleEt = (EditText) findViewById(R.id.single_page_title);
-        titleEt.setText(title);
+        titleTv = (TextView) findViewById(R.id.single_page_title_tv);
+        titleTv.setText(title);
+        titleInEditMode(false);
+        RelativeLayout titleRL = (RelativeLayout) findViewById(R.id.title_rl);
+        titleRL.setClickable(true);
+        titleRL.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                titleInEditMode(true);
+                return true;
+            }
+        });
+        titleRL.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                titleInEditMode(false);
+            }
+        });
+        titleOk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveTitleToMem();
+                titleTv.setText(titleEt.getText().toString());
+                titleInEditMode(false);
+            }
+        });
 
         /*--------------set note page picture --------------*/
         ImageView foodPic = (ImageView) findViewById(R.id.single_page_foodpicture);
-        foodPic.setImageBitmap(food.getImage(this));
+        foodPic.setImageBitmap(food.getImage(this, false));
 
 
         /* ---------------TODO delete test display all files-------------*/
@@ -235,9 +250,8 @@ public class RecipePageActivity extends AppCompatActivity {
      * save user input
      * TODO move the logic to onStop
      * TODO edit this logic so that it only shows edit text when the user clicks on it
-     * @param view
      */
-    public void saveInfo(View view){
+    private void saveTitleToMem(){
 
         // save food list in case of title change
         String cur_title = titleEt.getText().toString();
@@ -255,6 +269,20 @@ public class RecipePageActivity extends AppCompatActivity {
         }
         //displays a message saying information saved
         Toast.makeText(getApplicationContext(),"input saved",Toast.LENGTH_LONG).show();
+    }
+
+    private void titleInEditMode(boolean inEditMode){
+        if(inEditMode){
+            titleEt.setText(titleTv.getText().toString());
+            titleEt.setVisibility(View.VISIBLE);
+            titleOk.setVisibility(View.VISIBLE);
+            titleTv.setVisibility(View.INVISIBLE);
+        }
+        else {
+            titleEt.setVisibility(View.GONE);
+            titleOk.setVisibility(View.INVISIBLE);
+            titleTv.setVisibility(View.VISIBLE);
+        }
     }
 
 

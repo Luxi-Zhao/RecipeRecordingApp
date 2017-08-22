@@ -15,49 +15,70 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        >
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/foodpic2"
-            android:id="@+id/single_page_foodpicture"
-            android:layout_marginRight="700dp"
-            android:layout_marginEnd="700dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="240dp">
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/single_page_foodpicture"
+                />
 
-        <android.support.design.widget.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            app:fabSize="mini"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:id="@+id/floatingActionButton3"
-            android:onClick="saveInfo"
-            app:srcCompat="@android:drawable/ic_menu_save"
-            app:backgroundTint="@android:color/holo_blue_light" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#9fd5cdcd"
+                android:layout_centerInParent="true"
+                android:id="@+id/title_rl">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/single_page_title_tv"
+                        android:text="sdf"
+                        android:textSize="50sp"
+                        android:layout_centerInParent="true" />
+                </RelativeLayout>
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/single_page_title"
+                    android:text=""
+                    android:hint=""
+                    android:textSize="50sp"
+                    android:layout_marginStart="30dp"
+                    android:maxLines="1"
+                    android:layout_toStartOf="@+id/title_ok_button"
+                    android:layout_alignParentStart="true" />
 
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/single_page_title"
-            android:text="Title"
-            android:textSize="50sp"
-            android:layout_marginStart="92dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ok"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/title_ok_button"/>
 
+            </RelativeLayout>
+
+
+        </RelativeLayout>
 
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="30dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:id="@+id/ingredients_linear_layout"
-            android:layout_alignParentStart="true">
+            >
 
 
             <TextView
@@ -100,6 +121,8 @@
 
         <LinearLayout
             android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/ingredients_linear_layout"
@@ -119,13 +142,12 @@
                 />
 
             <ToggleButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textOff="add description"
-                android:textOn="cancel"
                 android:id="@+id/add_procedure_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                />
+                android:textOff="add description"
+                android:textOn="cancel" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

@@ -49,7 +49,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
         // - replace the contents of the view with that itemsData
 
         viewHolder.title.setText(foodList.get(position).getTitle());
-        viewHolder.foodImage.setImageBitmap(foodList.get(position).getImage(associatedActivityContext));
+        viewHolder.foodImage.setImageBitmap(foodList.get(position).getImage(associatedActivityContext, true));
 
     }
 

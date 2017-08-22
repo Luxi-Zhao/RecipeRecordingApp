@@ -20,7 +20,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -242,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Inflate and set the layout for the dialog;
             // Pass null as the parent view because its going in the dialog layout
-            fragmentView = inflater.inflate(R.layout.new_note_dialog_fragment, null);
+            fragmentView = inflater.inflate(R.layout.add_new_note_dialog_fragment, null);
             builder.setView(fragmentView);
 
             /* initialize imageUri with the default picture in case the user doesn't want to use

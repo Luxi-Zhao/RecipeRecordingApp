@@ -42,7 +42,6 @@
         android:layout_height="100dp"
         android:maxHeight="100dp"
         android:maxWidth="100dp"
-        android:src="@drawable/foodpic2"
         android:layout_below="@+id/new_note_name"
         android:layout_marginTop="5dp"
         android:layout_alignRight="@+id/new_note_name"
