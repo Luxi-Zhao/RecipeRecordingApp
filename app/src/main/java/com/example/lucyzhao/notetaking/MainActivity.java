@@ -234,7 +234,9 @@ public class MainActivity extends AppCompatActivity {
         static final int MY_PERMISSIONS_REQUEST_CAMERA = 5656;
         static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 5757;
         private View fragmentView;
+        private ImageView picPreview;
         static final int TAKE_PICTURE = 115;
+        static final int OPEN_GALLERY = 110;
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -252,9 +254,11 @@ public class MainActivity extends AppCompatActivity {
              */
             ((MainActivity) getActivity()).imageUri = Uri.parse(DEFAULT_PICTURE_PATH);
 
+            picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
             FloatingActionButton cameraButton = (FloatingActionButton) fragmentView.findViewById(R.id.camera_button);
             Button okButton = (Button) fragmentView.findViewById(R.id.ok_button);
             Button cancelButton = (Button) fragmentView.findViewById(R.id.cancel_button);
+            FloatingActionButton galleryButton = (FloatingActionButton) fragmentView.findViewById(R.id.gallery_button);
 
             okButton.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -286,20 +290,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            return builder.create();
-        }
+            galleryButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openGallery(); //TODO test valid
+                }
+            });
 
-        /**
-         * Handles the effects of dismissing the dialog on MainActivity
-         * (calling onRestart)
-         * EDIT: dismissing the dialog does not call onRestart, returning
-         * from picture taking does
-         */
-        private void dismissDialog(){
-            Log.v(TAG, "in dismissing dialogue");
-            ((MainActivity) getActivity()).getCache = false;
-            Log.v(TAG, "dialog dismissing, getCache = " + ((MainActivity) getActivity()).getCache);
-            dismiss();
+
+            return builder.create();
         }
 
         private void takePicture(){
@@ -311,6 +310,14 @@ public class MainActivity extends AppCompatActivity {
             ((MainActivity) getActivity()).getCache = false;
             Log.v(TAG, "leaving MainActivity, getCache = " + ((MainActivity) getActivity()).getCache);
         }
+
+        private void openGallery(){
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(intent, "Select Picture"), OPEN_GALLERY);
+        }
+
 
         /**
          * give imageUri another value instead of Uri.fromFile(photoFile) because
@@ -339,13 +346,23 @@ public class MainActivity extends AppCompatActivity {
             if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
                 setPicturePreview();
             }
+            else if (requestCode == OPEN_GALLERY && resultCode == Activity.RESULT_OK){
+                Uri galleryImageUri = data.getData();
+                ((MainActivity) getActivity()).imageUri = galleryImageUri;
+                Glide.with(this)
+                        .load(galleryImageUri)
+                        .centerCrop()
+                        .into(picPreview);
+            }
+            else if (resultCode == Activity.RESULT_CANCELED){
+                Log.v(TAG, "result cancelled");
+                ((MainActivity) getActivity()).imageUri = Uri.parse(Utils.DEFAULT_PICTURE_PATH);
+            }
 
         }
 
         private void setPicturePreview(){
             Log.v(TAG,"GETTING PICTURE: " + ((MainActivity)getActivity()).imageUri.toString());
-            ImageView picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
-
             Glide.with(this)
                     .load(((MainActivity) getActivity()).imageUri)
                     .centerCrop()

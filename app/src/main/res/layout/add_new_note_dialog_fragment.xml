@@ -1,75 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical" android:layout_width="wrap_content"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <EditText
         android:id="@+id/new_note_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="casual"
         android:textSize="18sp"
         android:hint="enter recipe name"
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"/>
-    <TextView
-        android:id="@+id/take_picture_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:text="Take a Picture"
-        android:layout_below="@+id/new_note_name"
-        android:layout_alignLeft="@+id/new_note_name"
-        android:layout_marginTop="10dp"
-        />
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/camera_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        app:fabSize="mini"
-        app:srcCompat="@android:drawable/ic_menu_camera"
-        android:layout_below="@+id/take_picture_text"
-        android:layout_marginTop="10dp"
-        android:layout_alignRight="@+id/take_picture_text"
-         />
 
-    <ImageView
-        android:id="@+id/foodpicture_preview"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:maxHeight="100dp"
-        android:maxWidth="100dp"
-        android:layout_below="@+id/new_note_name"
-        android:layout_marginTop="5dp"
-        android:layout_alignRight="@+id/new_note_name"
-        android:layout_marginRight="50dp"
-        android:background="@android:color/transparent" />
-
-    <Button
-        android:id="@+id/ok_button"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OK"
-        android:textSize="20sp"
-        android:layout_below="@+id/foodpicture_preview"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:layout_marginEnd="30dp">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/camera_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:clickable="true"
+                app:elevation="0dp"
+                app:fabSize="mini"
+                app:srcCompat="@android:drawable/ic_menu_camera" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/gallery_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                app:elevation="0dp"
+                app:fabSize="mini"
+                app:srcCompat="@android:drawable/ic_menu_gallery" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/foodpicture_preview"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/dotted_shape"
+            android:layout_marginStart="30dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_alignRight="@id/take_picture_text"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored" />
+        android:layout_gravity="center_horizontal">
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OK"
+            android:textSize="20sp"
+            android:layout_marginEnd="30dp"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored" />
 
-    <Button
-        android:id="@+id/cancel_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="CANCEL"
-        android:textSize="20sp"
-        android:layout_below="@+id/new_note_name"
-        android:layout_alignRight="@+id/foodpicture_preview"
-        android:layout_alignTop="@+id/ok_button"
-        android:layout_alignBottom="@+id/ok_button"
-        style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog" />
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL"
+            android:textSize="20sp"
+            android:layout_marginStart="30dp"
+            style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog" />
+
+    </LinearLayout>
+
+
+
 
 
 
@@ -170,4 +185,4 @@
          -->
 
 
- </RelativeLayout>
+ </LinearLayout>
