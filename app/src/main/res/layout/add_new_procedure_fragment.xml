@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:background="@drawable/dotted_shape"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
+        android:padding="10dp"
         android:id="@+id/new_procedure"
-        android:background="@android:color/transparent"
+        android:background="@drawable/dotted_shape"
         android:gravity="center"
         android:hint="enter text"
         />
 
     <Button
+        android:id="@+id/new_procedure_ok_button"
+        style="@android:style/Widget.Holo.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/new_procedure_ok_button"
-        android:text="ok"
-        />
+        android:text="OK" />
 </LinearLayout>

@@ -34,7 +34,7 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
                                                                 int viewType) {
         // inflates the layout for a single item created in res
         View itemLayoutView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.ingredient_single_list_item, null);
+                .inflate(R.layout.single_list_item_ingredient, null);
 
         // instantiates a new view created from the single item layout
         return new IngredientsListAdapter.ViewHolder(itemLayoutView);

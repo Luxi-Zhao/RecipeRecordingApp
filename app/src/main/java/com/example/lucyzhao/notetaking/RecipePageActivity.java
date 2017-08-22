@@ -4,6 +4,7 @@ package com.example.lucyzhao.notetaking;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -32,6 +33,8 @@ import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
 
 public class RecipePageActivity extends AppCompatActivity {
     private static final String TAG = RecipePageActivity.class.getSimpleName();
@@ -103,13 +106,17 @@ public class RecipePageActivity extends AppCompatActivity {
 
         /*--------------set note page picture --------------*/
         ImageView foodPic = (ImageView) findViewById(R.id.single_page_foodpicture);
-        Glide.with(this)
-                .load(food.getImageUriString())
-                .centerCrop()
-                .into(foodPic);
 
-        //foodPic.setImageBitmap(food.getImage(this, false));
-
+        if(food.getImageUriString().equals(DEFAULT_PICTURE_PATH)){
+            Bitmap.Config conf = Bitmap.Config.ARGB_4444;
+            foodPic.setImageBitmap(Bitmap.createBitmap(1, 1, conf));  // this creates a MUTABLE bitmap
+        }
+        else {
+            Glide.with(this)
+                    .load(food.getImageUriString())
+                    .centerCrop()
+                    .into(foodPic);
+        }
 
         /* ---------------TODO delete test display all files-------------*/
         File file = getFilesDir();
@@ -187,9 +194,6 @@ public class RecipePageActivity extends AppCompatActivity {
         ingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         ingRecyclerView.setAdapter(ingListAdapter);
-
-        ingRecyclerView.addItemDecoration(new DividerItemDecoration(this,
-                DividerItemDecoration.VERTICAL));
 
         /* --------- setting up add ingredient button ---------------*/
         addIngredientBtn = (ToggleButton) findViewById(R.id.add_ingredient_button);

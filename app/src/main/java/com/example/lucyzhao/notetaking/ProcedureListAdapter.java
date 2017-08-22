@@ -26,7 +26,7 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // inflates the layout for a single item created in res
         View itemLayoutView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.procedure_single_list_item, null);
+                .inflate(R.layout.single_list_item_procedure, null);
 
         // instantiates a new view created from the single item layout
         return new ProcedureListAdapter.ViewHolder(itemLayoutView);
@@ -101,8 +101,8 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
             } else {
                 pText.setVisibility(View.VISIBLE);
                 pEditText.setVisibility(View.GONE);
-                okButton.setVisibility(View.INVISIBLE);
-                deleteButton.setVisibility(View.INVISIBLE);
+                okButton.setVisibility(View.GONE);
+                deleteButton.setVisibility(View.GONE);
             }
         }
 

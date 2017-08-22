@@ -34,7 +34,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
                                                          int viewType) {
         // create a new view
         View itemLayoutView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.single_list_item, null);
+                .inflate(R.layout.single_list_item_title, null);
 
         return new ViewHolder(itemLayoutView);
     }

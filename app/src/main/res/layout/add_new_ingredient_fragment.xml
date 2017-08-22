@@ -10,6 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:layout_toStartOf="@+id/new_amount"
         android:hint="name"
         android:text="" />
 
@@ -26,7 +28,7 @@
     <Button
         android:id="@+id/ok_button"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:text="ok" />
