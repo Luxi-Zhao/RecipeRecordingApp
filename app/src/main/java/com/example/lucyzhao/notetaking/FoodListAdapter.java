@@ -2,14 +2,14 @@ package com.example.lucyzhao.notetaking;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -49,8 +49,11 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
         // - replace the contents of the view with that itemsData
 
         viewHolder.title.setText(foodList.get(position).getTitle());
-        viewHolder.foodImage.setImageBitmap(foodList.get(position).getImage(associatedActivityContext, true));
-
+        Glide.with(viewHolder.foodImage.getContext())
+                .load(foodList.get(position).getImageUriString())
+                .centerCrop()
+                .into(viewHolder.foodImage);    //use Glide library for efficient bitmap using
+                                                //prevents out of memory error
     }
 
     /**

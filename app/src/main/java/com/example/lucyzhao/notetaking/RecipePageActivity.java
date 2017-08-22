@@ -4,6 +4,7 @@ package com.example.lucyzhao.notetaking;
 
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,6 +25,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+
+import com.bumptech.glide.Glide;
+
 
 import java.io.File;
 import java.util.ArrayList;
@@ -98,7 +103,12 @@ public class RecipePageActivity extends AppCompatActivity {
 
         /*--------------set note page picture --------------*/
         ImageView foodPic = (ImageView) findViewById(R.id.single_page_foodpicture);
-        foodPic.setImageBitmap(food.getImage(this, false));
+        Glide.with(this)
+                .load(food.getImageUriString())
+                .centerCrop()
+                .into(foodPic);
+
+        //foodPic.setImageBitmap(food.getImage(this, false));
 
 
         /* ---------------TODO delete test display all files-------------*/

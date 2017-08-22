@@ -32,6 +32,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -340,18 +342,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void setPicturePreview(){
-            try {
-                Log.v("tag","GETTING PICTURE");
-                Bitmap originalBitmap = MediaStore.Images.Media.getBitmap(
-                        getContext().getContentResolver(), ((MainActivity)getActivity()).imageUri);
-                Log.v(TAG, ((MainActivity)getActivity()).imageUri.toString());
-                /* TODO note: CHANGED FROM 90 TO 0 ON REAL DEVICE*/
-                Bitmap processedBitmap = Utils.processBitmap(originalBitmap);
-                ImageView picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
-                picPreview.setImageBitmap(processedBitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            Log.v(TAG,"GETTING PICTURE: " + ((MainActivity)getActivity()).imageUri.toString());
+            ImageView picPreview = (ImageView) fragmentView.findViewById(R.id.foodpicture_preview);
+
+            Glide.with(this)
+                    .load(((MainActivity) getActivity()).imageUri)
+                    .centerCrop()
+                    .into(picPreview);
         }
 
 
