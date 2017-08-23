@@ -3,6 +3,7 @@ package com.example.lucyzhao.notetaking;
 import android.content.DialogInterface;
 import android.preference.DialogPreference;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,12 +18,14 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by LucyZhao on 2017/8/20.
  */
 
-public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdapter.ViewHolder> {
+public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdapter.ViewHolder>
+                                                                implements ItemTouchHelperAdapter {
     private ArrayList<String> procedureList;
     private static final String TAG = ProcedureListAdapter.class.getSimpleName();
 
@@ -63,7 +66,33 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
         return procedureList.size();
     }
 
+    /**
+     * Source: https://medium.com/@ipaulpro/drag-and-swipe-with-recyclerview-b9456d2b1aaf
+     * @param fromPosition
+     * @param toPosition
+     */
+    @Override
+    public void onItemMove(RecyclerView.ViewHolder holder, int fromPosition, int toPosition) {
+        ((ProcedureListAdapter.ViewHolder) holder).isInEditMode(false);
+
+        if(fromPosition > toPosition){
+            for(int i = fromPosition; i > toPosition; i--){
+                Collections.swap(procedureList, i, i - 1);
+            }
+        }
+        else{
+            for(int i = fromPosition; i < toPosition; i++){
+                Collections.swap(procedureList, i, i + 1);
+            }
+        }
+        notifyItemMoved(fromPosition, toPosition);
+    }
+
+    @Override
+    public void onItemDismiss(int position) { }
+
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+        CardView pCardView;
         TextView pText;
         EditText pEditText;
         Button okButton;
@@ -75,6 +104,7 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
 
         public ViewHolder(View itemLayoutView){
             super(itemLayoutView);
+            pCardView = (CardView) itemLayoutView.findViewById(R.id.procedure_card_view);
             pText = (TextView) itemLayoutView.findViewById(R.id.procedure_text);
             pEditText = (EditText) itemLayoutView.findViewById(R.id.procedure_edit_text);
             okButton = (Button) itemLayoutView.findViewById(R.id.procedure_edit_ok);

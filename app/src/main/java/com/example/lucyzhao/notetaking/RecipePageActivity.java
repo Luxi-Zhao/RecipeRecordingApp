@@ -4,6 +4,7 @@ package com.example.lucyzhao.notetaking;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -20,6 +21,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,10 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.util.ArrayList;
 
+import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_DRAG;
+import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_IDLE;
+import static android.support.v7.widget.helper.ItemTouchHelper.DOWN;
+import static android.support.v7.widget.helper.ItemTouchHelper.UP;
 import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
 
 public class RecipePageActivity extends AppCompatActivity {
@@ -165,6 +171,12 @@ public class RecipePageActivity extends AppCompatActivity {
         prRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         prRecyclerView.setAdapter(prListAdapter);
+
+        ItemTouchHelper.Callback callback =
+                new mItemTouchHelperCallback(prListAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(prRecyclerView);
+
 
         /* -------- setting up add procedure button -----------------*/
         addProcedureBtn = (ToggleButton) findViewById(R.id.add_procedure_button);
@@ -739,6 +751,36 @@ public class RecipePageActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    private static class mItemTouchHelperCallback extends ItemTouchHelper.Callback {
+
+        ItemTouchHelperAdapter mAdapter;
+        mItemTouchHelperCallback(ItemTouchHelperAdapter adapter){
+            this.mAdapter = adapter;
+        }
+
+        @Override
+        public boolean isLongPressDragEnabled() {
+            return true;
+        }
+
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            return makeFlag(ACTION_STATE_IDLE,  UP | DOWN) | makeFlag(ACTION_STATE_DRAG, UP | DOWN);
+        }
+
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            mAdapter.onItemMove(viewHolder, viewHolder.getAdapterPosition(), target.getAdapterPosition());
+            return true;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+
+        }
     }
 
 }
