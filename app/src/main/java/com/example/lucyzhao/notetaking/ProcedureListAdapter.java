@@ -1,13 +1,20 @@
 package com.example.lucyzhao.notetaking;
 
+import android.content.DialogInterface;
+import android.preference.DialogPreference;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -16,7 +23,8 @@ import java.util.ArrayList;
  */
 
 public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdapter.ViewHolder> {
-    ArrayList<String> procedureList;
+    private ArrayList<String> procedureList;
+    private static final String TAG = ProcedureListAdapter.class.getSimpleName();
 
     public ProcedureListAdapter(ArrayList<String> procedure_list) {
         this.procedureList = procedure_list;
@@ -35,7 +43,18 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.pText.setText(procedureList.get(position));
+        String text = procedureList.get(position);
+        if(Utils.isUri(text)){
+            Glide.with(holder.pImage.getContext())
+                    .load(text)
+                    .centerCrop()
+                    .into(holder.pImage);
+            holder.setIsPic(true);
+        }
+        else{
+            holder.setIsPic(false);
+            holder.pText.setText(procedureList.get(position));
+        }
         holder.isInEditMode(false);
     }
 
@@ -50,12 +69,17 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
         Button okButton;
         Button deleteButton;
 
+        ImageView pImage;
+
+        private boolean isPic = false;
+
         public ViewHolder(View itemLayoutView){
             super(itemLayoutView);
             pText = (TextView) itemLayoutView.findViewById(R.id.procedure_text);
             pEditText = (EditText) itemLayoutView.findViewById(R.id.procedure_edit_text);
             okButton = (Button) itemLayoutView.findViewById(R.id.procedure_edit_ok);
             deleteButton = (Button) itemLayoutView.findViewById(R.id.procedure_edit_delete);
+            pImage = (ImageView) itemLayoutView.findViewById(R.id.procedure_image);
 
             //isInEditMode(false);
 
@@ -86,6 +110,14 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
             itemLayoutView.setOnLongClickListener(this);
         }
 
+        public void setIsPic(boolean isPic){
+            this.isPic = isPic;
+        }
+
+        public boolean getIsPic() {
+            return isPic;
+        }
+
         @Override
         public void onClick(View v) {
             isInEditMode(false);
@@ -93,22 +125,62 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
 
         @Override
         public boolean onLongClick(View v) {
+            Log.v(TAG, "in onLongClick");
             isInEditMode(true);
-            pEditText.setText(pText.getText().toString());
             return true;
         }
 
-        private void isInEditMode(boolean inEditMode) {
-            if (inEditMode) {
-                pText.setVisibility(View.INVISIBLE);
-                pEditText.setVisibility(View.VISIBLE);
-                okButton.setVisibility(View.VISIBLE);
-                deleteButton.setVisibility(View.VISIBLE);
-            } else {
-                pText.setVisibility(View.VISIBLE);
+        /**
+         * Helper method that designates what the app should do if
+         * the user wishes to edit a procedure item
+         * @param inEditMode
+         */
+        private void isInEditMode(boolean inEditMode){
+            if(isPic){
+                pImage.setVisibility(View.VISIBLE);
+                if(inEditMode){
+                    // 1. Instantiate an AlertDialog.Builder with its constructor
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(pImage.getContext());
+
+                    // 2. set the dialog characteristics
+                    builder.setMessage("delete picture?")
+                            .setTitle("warning")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                        public void onClick(DialogInterface dialog, int id) {
+                            procedureList.remove(getAdapterPosition());
+                            notifyItemRemoved(getAdapterPosition());
+                        }
+                    })
+                            .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+
+                    // 3. Get the AlertDialog from create()
+                    builder.create().show();
+                }
+                pText.setVisibility(View.GONE);
                 pEditText.setVisibility(View.GONE);
                 okButton.setVisibility(View.GONE);
                 deleteButton.setVisibility(View.GONE);
+            }
+            else{
+                pImage.setVisibility(View.GONE);
+                if(inEditMode){
+                    pText.setVisibility(View.INVISIBLE);
+                    pEditText.setText(pText.getText().toString());
+                    pEditText.setVisibility(View.VISIBLE);
+                    okButton.setVisibility(View.VISIBLE);
+                    deleteButton.setVisibility(View.VISIBLE);
+                }
+                else{
+                    pText.setVisibility(View.VISIBLE);
+                    pEditText.setVisibility(View.GONE);
+                    okButton.setVisibility(View.GONE);
+                    deleteButton.setVisibility(View.GONE);
+                }
             }
         }
 

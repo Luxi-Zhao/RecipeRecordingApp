@@ -45,34 +45,4 @@ import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
 
     public int getId() { return id; }
 
-    /**
-     * similar to setImagePreview in MainActivity
-     * convert a Uri string to a Bitmap
-     * Process the Bitmap to make it point to the right direction
-     * if the picture is taken from the camera; if it's the default
-     * picture, use it directly
-     * TODO use glide
-     * @param context The context in which this method is used
-     * @return
-     */
-    public Bitmap getImage(Context context, boolean square) {
-        Uri imageUri = Uri.parse(imageUriString);
-        Bitmap originalBitmap = null;
-        try {
-            originalBitmap = MediaStore.Images.Media.getBitmap(
-                    context.getContentResolver(), imageUri);
-        } catch (IOException e) {
-            Log.v("IOException","bitmap cannot be created from uri");
-            e.printStackTrace();
-        }
-        /* TODO note: CHANGED FROM 90 TO 0 ON REAL DEVICE*/
-        if(imageUriString.equals(DEFAULT_PICTURE_PATH)){
-            Bitmap.Config conf = Bitmap.Config.ARGB_4444; // see other conf types
-            return Bitmap.createBitmap(1, 1, conf); // this creates a MUTABLE bitmap
-        }
-        else if(square){
-            return Utils.processBitmap(originalBitmap);
-        }
-        else return originalBitmap;
-    }
 }

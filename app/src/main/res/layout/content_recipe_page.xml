@@ -146,6 +146,17 @@
                 android:layout_height="wrap_content"
                 />
 
+            <Button
+                android:id="@+id/add_picture_button"
+                style="@android:style/Widget.Holo.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:backgroundTint="@color/colorAccent"
+                android:text="ADD PICTURE"
+                android:textSize="14sp"/>
+
             <ToggleButton
                 android:id="@+id/add_procedure_button"
                 style="@android:style/Widget.Holo.Button.Toggle"

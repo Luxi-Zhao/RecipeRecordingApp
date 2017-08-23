@@ -50,38 +50,6 @@ public class Utils {
     public static final String ADD_PROCEDURE_FRAGMENT = "add_proc_frag";
 
 
-
-    /**
-     * Rotate the bitmap by certain degrees
-     * source
-     * http://stackoverflow.com/questions/7286714/android-get-orientation-of-a-camera-bitmap-and-rotate-back-90-degrees
-     * Users should only take pictures in portrait EDIT: landscape is ok on a real device
-     * @param bm
-     * @return
-     */
-    public static Bitmap processBitmap(Bitmap bm, int rotationInDegrees){
-
-        Matrix matrix = new Matrix();
-        //rotate the matrix around a pivot point
-        matrix.setRotate(rotationInDegrees, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
-        Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
-        int newSize;
-        if(bm.getHeight() > bm.getWidth())
-            newSize = bm.getWidth();
-        else newSize = bm.getHeight();
-        Bitmap resizedBitmap = Bitmap.createBitmap(rotatedBitmap, 0,0, newSize, newSize);
-        return resizedBitmap;
-    }
-
-    public static Bitmap processBitmap(Bitmap bm){
-        int newSize;
-        if(bm.getHeight() > bm.getWidth())
-            newSize = bm.getWidth();
-        else newSize = bm.getHeight();
-        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0,0, newSize, newSize);
-        return resizedBitmap;
-    }
-
     public static void saveFoodList(Context context, ArrayList<Food> foodList) {
         try {
             FileOutputStream fos = context.openFileOutput(FOOD_LIST_KEY, MODE_PRIVATE);
@@ -227,6 +195,16 @@ public class Utils {
                 .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
     }
 
+    /**
+     * checks if a procedure text is a uri
+     * @param str
+     * @return
+     */
+    public static boolean isUri(String str){
+        if(str.startsWith("file") || str.startsWith("content"))
+            return true;
+        else return false;
+    }
 
 
 }
