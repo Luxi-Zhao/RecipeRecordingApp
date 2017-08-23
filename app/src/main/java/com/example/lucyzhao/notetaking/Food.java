@@ -16,7 +16,7 @@ import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
  */
  public class Food implements Serializable{
     private String title;
-    private final String imageUriString;
+    private String imageUriString;
     private final int id;
 
     public Food( String title, String imageUriString, Context context ) {
@@ -38,6 +38,10 @@ import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
     }
 
     public String getImageUriString() { return imageUriString; }
+
+    public void setImageUriString(String imageUriString) {
+        this.imageUriString = imageUriString;
+    }
 
     public int getId() { return id; }
 

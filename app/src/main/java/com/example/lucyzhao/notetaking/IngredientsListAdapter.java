@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -50,8 +51,17 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
 
         // - get data from your itemsData at this position
         // - replace the contents of the view with that itemsData
+
+        float amount = ingredientList.get(position).getAmount();
+        String amountString;
+        if(Math.floor(amount) == amount) {
+            amountString = Integer.toString((int)amount);
+        }
+        else {
+            amountString = Float.toString(amount);
+        }
         viewHolder.name_tv.setText(ingredientList.get(position).getName());
-        viewHolder.amount_tv.setText(Integer.toString(ingredientList.get(position).getAmount()));
+        viewHolder.amount_tv.setText(amountString);
         viewHolder.unit_tv.setText(ingredientList.get(position).getUnit());
 
         // hides edit text for recycled views
@@ -65,10 +75,6 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
         return ingredientList.size();
     }
 
-    public void updateInnerList(ArrayList<Ingredient> newIngList) {
-        this.ingredientList = newIngList;
-        this.notifyDataSetChanged();
-    }
 
 
     // inner class to hold a reference to each item of RecyclerView
@@ -107,7 +113,7 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
             hides the edit text
             textview shows by default
              */
-            isInEditMode(false);
+           // isInEditMode(false);
 
 
             // configures clicking events for recycler view
@@ -122,12 +128,18 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
                 public void onClick(View v) {
                     Log.v(TAG, "edit ok on click");
                     String new_name = name.getText().toString();
-                    int new_amount = Integer.parseInt(amount.getText().toString());
+                    String new_amount_str = amount.getText().toString();
                     String new_unit = unit.getText().toString();
-                    Ingredient new_ing = new Ingredient(new_name, new_amount, new_unit);
-                    ingredientList.remove(getAdapterPosition());
-                    ingredientList.add(getAdapterPosition(), new_ing);
-                    notifyItemChanged(getAdapterPosition());
+                    if (new_name.isEmpty() || new_amount_str.isEmpty()){
+                        Toast.makeText(itemLayoutView.getContext(),
+                                "name and amount cannot be empty", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Ingredient new_ing = new Ingredient(new_name, Float.parseFloat(new_amount_str), new_unit);
+                        ingredientList.remove(getAdapterPosition());
+                        ingredientList.add(getAdapterPosition(), new_ing);
+                        notifyItemChanged(getAdapterPosition());
+                    }
                 }
             });
 

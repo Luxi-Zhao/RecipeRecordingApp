@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -56,14 +57,19 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
             okButton = (Button) itemLayoutView.findViewById(R.id.procedure_edit_ok);
             deleteButton = (Button) itemLayoutView.findViewById(R.id.procedure_edit_delete);
 
-            isInEditMode(false);
+            //isInEditMode(false);
 
             okButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    procedureList.remove(getAdapterPosition());
-                    procedureList.add(getAdapterPosition(), pEditText.getText().toString());
-                    notifyItemChanged(getAdapterPosition());
+                    if(pEditText.getText().toString().isEmpty()){
+                        Toast.makeText(v.getContext(), "procedure cannot be empty", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        procedureList.remove(getAdapterPosition());
+                        procedureList.add(getAdapterPosition(), pEditText.getText().toString());
+                        notifyItemChanged(getAdapterPosition());
+                    }
                 }
             });
 

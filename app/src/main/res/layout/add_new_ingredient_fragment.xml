@@ -40,6 +40,6 @@
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/new_unit"
         android:hint="0"
-        android:inputType="numberDecimal"
+        android:inputType="numberDecimal|numberSigned"
         android:text="" />
 </RelativeLayout>

@@ -13,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
@@ -230,6 +231,10 @@ public class MainActivity extends AppCompatActivity {
         return nameExists;
     }
 
+
+
+
+
     public static class NewNoteDialogFragment extends DialogFragment {
         static final int MY_PERMISSIONS_REQUEST_CAMERA = 5656;
         static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 5757;
@@ -303,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
 
         private void takePicture(){
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            ((MainActivity)getActivity()).imageUri = createUri();
+            ((MainActivity)getActivity()).imageUri = Utils.createUri(this);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, ((MainActivity)getActivity()).imageUri);
             startActivityForResult(intent, TAKE_PICTURE);
 
@@ -311,6 +316,9 @@ public class MainActivity extends AppCompatActivity {
             Log.v(TAG, "leaving MainActivity, getCache = " + ((MainActivity) getActivity()).getCache);
         }
 
+        /**
+         * Source: http://androidbitmaps.blogspot.ca/2015/04/loading-images-in-android-part-iii-pick.html
+         */
         private void openGallery(){
             Intent intent = new Intent();
             intent.setType("image/*");
@@ -370,7 +378,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-
         /**
          * Helper method to request device permissions
          * If permission is denied, request again
@@ -386,15 +393,16 @@ public class MainActivity extends AppCompatActivity {
             if (ContextCompat.checkSelfPermission(getContext(),
                     devicePermission)
                     == PackageManager.PERMISSION_DENIED) {
-                    // try requesting the permission again.
-                    Log.v(TAG,"requesting permission");
+                // try requesting the permission again.
+                Log.v(TAG,"requesting permission");
+                if(Build.VERSION.SDK_INT >= 23)
                     requestPermissions(
                             new String[]{devicePermission},
                             requestCode);
 
             }
             else if(ContextCompat.checkSelfPermission(getContext(),
-                        Manifest.permission.CAMERA)
+                    Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED){
                 Log.v(TAG, "camera permission already granted");
                 takePicture();
@@ -412,17 +420,17 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onRequestPermissionsResult(int requestCode,
                                                String permissions[], int[] grantResults) {
-            Log.v(TAG,"entering result");
+            Log.v(TAG, "entering result");
             switch (requestCode) {
                 case MY_PERMISSIONS_REQUEST_CAMERA: {
                     // If request is cancelled, the result arrays are empty.
                     if (grantResults.length > 0
                             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Log.v("tag","trying to take picture");
+                        Log.v("tag", "trying to take picture");
                         // permission was granted, yay! Take the picture
                         takePicture();
                     } else {
-                        Log.v("tag","camera access permission denied");
+                        Log.v("tag", "camera access permission denied");
                         // permission denied, boo! Disable the
                         // functionality that depends on this permission.
                     }
@@ -431,11 +439,11 @@ public class MainActivity extends AppCompatActivity {
                 case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE: {
                     if (grantResults.length > 0
                             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Log.v("tag","ask for camera permission");
+                        Log.v("tag", "ask for camera permission");
                         // permission was granted, yay! Ask for camera permission
                         requestUserPermission(Manifest.permission.CAMERA, MY_PERMISSIONS_REQUEST_CAMERA);
                     } else {
-                        Log.v("tag","external storage writing permission denied");
+                        Log.v("tag", "external storage writing permission denied");
                         // permission denied, boo! Disable the
                         // functionality that depends on this permission.
                     }
@@ -445,9 +453,6 @@ public class MainActivity extends AppCompatActivity {
                 // permissions this app might request
             }
         }
-
-
-
     }
 
 }

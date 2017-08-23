@@ -50,7 +50,7 @@
             android:backgroundTint="@color/colorAccent"
             android:hint=""
             android:text=""
-            android:inputType="number"
+            android:inputType="numberDecimal"
             android:textSize="20sp" />
 
         <Button

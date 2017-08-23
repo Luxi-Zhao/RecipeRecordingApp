@@ -1,10 +1,17 @@
 package com.example.lucyzhao.notetaking;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -41,6 +48,7 @@ public class Utils {
 
     public static final String ADD_INGREDIENT_FRAGMENT = "add_ingredient_frag";
     public static final String ADD_PROCEDURE_FRAGMENT = "add_proc_frag";
+
 
 
     /**
@@ -204,4 +212,21 @@ public class Utils {
         DisplayMetrics displayMetrics = c.getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
+
+
+    /**
+     * give imageUri another value instead of Uri.fromFile(photoFile) because
+     * file: // can no longer be used
+     */
+    public static Uri createUri(DialogFragment fragment){
+        ContentValues values = new ContentValues(1);
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+        //insert values into a table at EXTERNAL_CONTENT_URI and get the URI of the newly
+        //created row
+        return fragment.getActivity().getContentResolver()
+                .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    }
+
+
+
 }

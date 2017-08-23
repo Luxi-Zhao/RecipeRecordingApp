@@ -19,11 +19,13 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="240dp">
+            android:layout_height="240dp"
+            android:id="@+id/change_pic_fragment_container">
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/single_page_foodpicture"
+                android:clickable="true"
                 />
 
             <RelativeLayout
@@ -57,12 +59,13 @@
                     android:layout_alignParentStart="true" />
 
                 <Button
+                    android:id="@+id/title_ok_button"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ok"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:id="@+id/title_ok_button"/>
+                    android:text="ok" />
 
             </RelativeLayout>
 

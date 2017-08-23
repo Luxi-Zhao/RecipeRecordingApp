@@ -8,10 +8,10 @@ import java.io.Serializable;
 
 public class Ingredient implements Serializable{
     private final String name;
-    private final int amount;
+    private final float amount;
     private final String unit;
 
-    public Ingredient(String name, int amount, String unit){
+    public Ingredient(String name, float amount, String unit){
         this.name = name;
         this.amount = amount;
         this.unit = unit;
@@ -21,7 +21,7 @@ public class Ingredient implements Serializable{
         return name;
     }
 
-    public int getAmount(){
+    public float getAmount(){
         return amount;
     }
 
