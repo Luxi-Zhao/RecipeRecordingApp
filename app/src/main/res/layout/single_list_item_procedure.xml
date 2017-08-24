@@ -56,17 +56,8 @@
             android:layout_height="wrap_content"
             android:text="ok"
             android:layout_alignParentTop="true"
-            android:layout_toStartOf="@+id/procedure_edit_delete"
+            android:layout_alignParentEnd="true"
              />
-
-        <Button
-            android:id="@+id/procedure_edit_delete"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="del"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"/>
 
     </RelativeLayout>
 

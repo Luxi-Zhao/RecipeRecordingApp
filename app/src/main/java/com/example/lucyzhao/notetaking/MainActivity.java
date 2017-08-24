@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         // get the cached foodlist
         ArrayList<Food> cachedFoodList = Utils.getCachedFoodList(getApplicationContext());
-        if(cachedFoodList != null){
+        if (cachedFoodList != null) {
             foodList = cachedFoodList;
         }
 
@@ -78,106 +80,30 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(foodListAdapter);
 
         /*---------------detecting swipe motion--------------------*/
-        ItemTouchHelper mIth = new ItemTouchHelper(
-                new ItemTouchHelper.Callback() {
-                    private Paint paint = new Paint();
-                    private Paint textPaint = new Paint();
-                    private final Bitmap deleteIcon = BitmapFactory.decodeResource(getApplicationContext().getResources(), android.R.drawable.ic_menu_delete);
-
-                    @Override
-                    public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                        return makeFlag(ACTION_STATE_IDLE, LEFT) | makeFlag(ACTION_STATE_SWIPE, LEFT);
-                    }
-
-                    @Override
-                    public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                        return false; //this method should never be called
-                    }
-                    /* when the user swipes a view, it gets deleted */
-                    @Override
-                    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                        int posSwiped = viewHolder.getAdapterPosition();
-                        Log.v("onSwiped","you swiped it!");
-                        Log.v("onSwiped","adapter position is " + posSwiped);
-
-                        /* 1.delete the picture associated */
-                        String uriString = foodList.get(posSwiped).getImageUriString();
-                        deleteImageOnDevice(Uri.parse(uriString), getApplicationContext());
-
-                        /*  2.remove the ingredient and procedure files from internal
-                            storage
-                            3.remove the swiped item from the adapter and its internal
-                            list
-                         */
-                        if(!Utils.deleteFoodDir(getApplicationContext(), foodList.get(posSwiped).getId())){
-                            Toast.makeText(getApplicationContext(), "Error: delete failed", Toast.LENGTH_LONG);
-                        }
-                        foodList.remove(posSwiped);
-                        foodListAdapter.notifyItemRemoved(posSwiped);
-
-                    }
-
-                    @Override
-                    public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder){
-                        return 0.4f;
-                    }
-
-                    @Override
-                    public void onChildDraw(Canvas c,
-                                            RecyclerView recyclerView,
-                                            RecyclerView.ViewHolder viewHolder,
-                                            float dX,
-                                            float dY,
-                                            int actionState,
-                                            boolean isCurrentlyActive){
-                        super.onChildDraw(c,recyclerView,viewHolder,dX,dY,actionState,isCurrentlyActive);
-                        if(isCurrentlyActive && actionState == ACTION_STATE_SWIPE) {
-                            paint.setColor(0xffff0000);
-                            View view = viewHolder.itemView;
-                            /* draw the red rectangle */
-                            c.drawRect(view.getRight() + dX, view.getTop(), view.getRight(), view.getBottom(), paint);
-                            /* draw the delete icon and "swipe to delete" text */
-                            if (dX <= -200){
-                                c.drawBitmap(deleteIcon, view.getRight() - deleteIcon.getWidth() - 50,
-                                        view.getTop() + (view.getBottom() - view.getTop() - deleteIcon.getHeight()) / 2, paint);
-                                textPaint.setColor(Color.WHITE);
-                                textPaint.setStyle(Paint.Style.FILL);
-                                int textSize = 50;
-                                textPaint.setTextSize(textSize);
-                                String text = "swipe to delete";
-                                float textWidth = textPaint.measureText(text);
-                                c.drawText(text,view.getRight() - textWidth - deleteIcon.getWidth() - 70,
-                                        view.getTop() + (view.getBottom()-view.getTop())/2 + textSize/2, textPaint);
-                            }
-                        }
-                    }
-
-
-                });
-        mIth.attachToRecyclerView(recyclerView);
+        new ItemTouchHelper(new mFoodTouchHelperCallback(foodListAdapter, getApplicationContext()))
+                .attachToRecyclerView(recyclerView);
         /*---------------end of detecting swipe motion--------------------*/
 
     }
 
     @Override
-    protected void onStop(){
+    protected void onStop() {
         super.onStop();
         /* serialize the arraylist */
         Log.v(TAG, "in onStop");
-        Utils.saveFoodList(getApplicationContext(),foodList);
+        Utils.saveFoodList(getApplicationContext(), foodList);
     }
 
     @Override
-    protected void onRestart(){
+    protected void onRestart() {
         super.onRestart();
         Log.v(TAG, "in onRestart");
-        if(getCache) {
+        if (getCache) {
             Log.v(TAG, "getting cache");
             ArrayList<Food> newFoodList = Utils.getCachedFoodList(getApplicationContext());
             foodListAdapter.updateInnerList(newFoodList);
             foodList = newFoodList;
-        }
-        else {
+        } else {
             Log.v(TAG, "do not get cache");
             getCache = true;
         }
@@ -185,54 +111,38 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * Delete the image saved in the gallery
-     * @param uri of the image
-     * @param context current context
-     */
-    private static void deleteImageOnDevice(Uri uri, Context context){
-        Log.v(TAG, "deleting file" + uri.getPath());
-        if (!uri.getPath().equals(Utils.DEFAULT_PICTURE_URI_PATH)){
-            Log.v(TAG, "uri.getPath() is {" + uri.getPath() + "}");
-            Log.v(TAG, "default picture uri path is {" + Utils.DEFAULT_PICTURE_URI_PATH + "}");
-            context.getContentResolver().delete(uri, null, null);
-        }
-
-    }
-
-    /**
      * Callback for the add new note floating action button
+     *
      * @param view
      */
     public void addNewNote(View view) {
         final NewNoteDialogFragment dialogFragment = new NewNoteDialogFragment();
-        dialogFragment.show(getSupportFragmentManager(),"newNoteDialogFragment");
+        dialogFragment.show(getSupportFragmentManager(), "newNoteDialogFragment");
     }
 
     /**
      * Check if the input recipe name exists. If it does, prompt user to enter another name
      * If not, create a new note with this name
+     *
      * @return whether the input recipe name already exists
      */
-    private boolean onDialogPositiveClick(){
+    private boolean onDialogPositiveClick() {
         boolean nameExists = false;
-        for(Food food : foodList) {
+        for (Food food : foodList) {
             Log.w("food is ", food.getTitle());
-            if(food.getTitle().equals(newNoteName.getText().toString())) {
-                Toast.makeText(getApplicationContext(),"recipe exists, change name", Toast.LENGTH_LONG).show();
+            if (food.getTitle().equals(newNoteName.getText().toString())) {
+                Toast.makeText(getApplicationContext(), "recipe exists, change name", Toast.LENGTH_LONG).show();
                 nameExists = true;
                 break;
             }
         }
-        if(!nameExists) {
+        if (!nameExists) {
             foodList.add(new Food(newNoteName.getText().toString(), imageUri.toString(), this));
             foodListAdapter.notifyItemInserted(foodListAdapter.getItemCount() - 1);
-            Toast.makeText(getApplicationContext(),"created!",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "created!", Toast.LENGTH_SHORT).show();
         }
         return nameExists;
     }
-
-
-
 
 
     public static class NewNoteDialogFragment extends DialogFragment {
@@ -265,31 +175,31 @@ public class MainActivity extends AppCompatActivity {
             Button cancelButton = (Button) fragmentView.findViewById(R.id.cancel_button);
             FloatingActionButton galleryButton = (FloatingActionButton) fragmentView.findViewById(R.id.gallery_button);
 
-            okButton.setOnClickListener(new View.OnClickListener(){
+            okButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view){
+                public void onClick(View view) {
                     ((MainActivity) getActivity()).newNoteName
                             = (EditText) fragmentView.findViewById(R.id.new_note_name);
                     //transfer control back to the Fragment's host to check if the name
                     //already exits
-                    if(!((MainActivity) getActivity()).onDialogPositiveClick()) {
+                    if (!((MainActivity) getActivity()).onDialogPositiveClick()) {
                         dismiss();
                         //dismissDialog();
                     }
                 }
             });
-            cancelButton.setOnClickListener(new View.OnClickListener(){
+            cancelButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view){
-                    deleteImageOnDevice(((MainActivity)getActivity()).imageUri, getActivity());
+                public void onClick(View view) {
+                    Utils.deleteImageOnDevice(((MainActivity) getActivity()).imageUri, getActivity());
                     dismiss();
                     //dismissDialog();
                 }
             });
 
-            cameraButton.setOnClickListener(new View.OnClickListener(){
+            cameraButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view){
+                public void onClick(View view) {
                     //this will request camera permission, which will try to take a picture
                     requestUserPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
                 }
@@ -306,10 +216,10 @@ public class MainActivity extends AppCompatActivity {
             return builder.create();
         }
 
-        private void takePicture(){
+        private void takePicture() {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            ((MainActivity)getActivity()).imageUri = Utils.createUri(this);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, ((MainActivity)getActivity()).imageUri);
+            ((MainActivity) getActivity()).imageUri = Utils.createUri(this);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, ((MainActivity) getActivity()).imageUri);
             startActivityForResult(intent, TAKE_PICTURE);
 
             ((MainActivity) getActivity()).getCache = false;
@@ -319,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * Source: http://androidbitmaps.blogspot.ca/2015/04/loading-images-in-android-part-iii-pick.html
          */
-        private void openGallery(){
+        private void openGallery() {
             Intent intent = new Intent();
             intent.setType("image/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -328,49 +238,34 @@ public class MainActivity extends AppCompatActivity {
 
 
         /**
-         * give imageUri another value instead of Uri.fromFile(photoFile) because
-         * file: // can no longer be used
-         */
-        private Uri createUri(){
-            ContentValues values = new ContentValues(1);
-            values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
-            //insert values into a table at EXTERNAL_CONTENT_URI and get the URI of the newly
-            //created row
-            return getActivity().getContentResolver()
-                    .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-        }
-
-
-        /**
          * Handling result from startActivityForResult
+         *
          * @param requestCode
          * @param resultCode
          * @param data
          */
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            Log.v("tag","ENTERING ON ACTIVITY RESULT");
+            Log.v("tag", "ENTERING ON ACTIVITY RESULT");
             super.onActivityResult(requestCode, resultCode, data);
             if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
                 setPicturePreview();
-            }
-            else if (requestCode == OPEN_GALLERY && resultCode == Activity.RESULT_OK){
+            } else if (requestCode == OPEN_GALLERY && resultCode == Activity.RESULT_OK) {
                 Uri galleryImageUri = data.getData();
                 ((MainActivity) getActivity()).imageUri = galleryImageUri;
                 Glide.with(this)
                         .load(galleryImageUri)
                         .centerCrop()
                         .into(picPreview);
-            }
-            else if (resultCode == Activity.RESULT_CANCELED){
+            } else if (resultCode == Activity.RESULT_CANCELED) {
                 Log.v(TAG, "result cancelled");
                 ((MainActivity) getActivity()).imageUri = Uri.parse(Utils.DEFAULT_PICTURE_PATH);
             }
 
         }
 
-        private void setPicturePreview(){
-            Log.v(TAG,"GETTING PICTURE: " + ((MainActivity)getActivity()).imageUri.toString());
+        private void setPicturePreview() {
+            Log.v(TAG, "GETTING PICTURE: " + ((MainActivity) getActivity()).imageUri.toString());
             Glide.with(this)
                     .load(((MainActivity) getActivity()).imageUri)
                     .centerCrop()
@@ -384,36 +279,34 @@ public class MainActivity extends AppCompatActivity {
          * If permission requested is camera and is already granted, take the picture
          * If permission requested is external storage and is already granted, check the camera
          * permission
+         *
          * @param devicePermission could be either camera permission or external storage permission
          * @param requestCode
          */
-        private void requestUserPermission(String devicePermission, int requestCode){
-            Log.v(TAG,"entering requesting user permission" + devicePermission);
+        private void requestUserPermission(String devicePermission, int requestCode) {
+            Log.v(TAG, "entering requesting user permission" + devicePermission);
 
             if (ContextCompat.checkSelfPermission(getContext(),
                     devicePermission)
                     == PackageManager.PERMISSION_DENIED) {
                 // try requesting the permission again.
-                Log.v(TAG,"requesting permission");
-                if(Build.VERSION.SDK_INT >= 23)
+                Log.v(TAG, "requesting permission");
+                if (Build.VERSION.SDK_INT >= 23)
                     requestPermissions(
                             new String[]{devicePermission},
                             requestCode);
 
-            }
-            else if(ContextCompat.checkSelfPermission(getContext(),
+            } else if (ContextCompat.checkSelfPermission(getContext(),
                     Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_GRANTED){
+                    == PackageManager.PERMISSION_GRANTED) {
                 Log.v(TAG, "camera permission already granted");
                 takePicture();
-            }
-            else if(ContextCompat.checkSelfPermission(getContext(),
+            } else if (ContextCompat.checkSelfPermission(getContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED){
+                    == PackageManager.PERMISSION_GRANTED) {
                 Log.v(TAG, "camera permission not granted, requesting. External S permission granted");
                 requestUserPermission(Manifest.permission.CAMERA, MY_PERMISSIONS_REQUEST_CAMERA);
-            }
-            else
+            } else
                 Log.v(TAG, "error requesting permission");
         }
 
@@ -451,6 +344,91 @@ public class MainActivity extends AppCompatActivity {
                 }
                 // other 'case' lines to check for other
                 // permissions this app might request
+            }
+        }
+    }
+
+    private static class mFoodTouchHelperCallback extends ItemTouchHelper.Callback {
+
+        private Paint paint = new Paint();
+        private Paint textPaint = new Paint();
+        private final Bitmap deleteIcon;
+        private final Context context;
+
+        private final ItemTouchHelperAdapter adapter;
+
+        mFoodTouchHelperCallback(ItemTouchHelperAdapter adapter, Context context) {
+            this.context = context;
+            this.adapter = adapter;
+            this.deleteIcon = BitmapFactory.decodeResource(context.getResources(), android.R.drawable.ic_menu_delete);
+        }
+
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            return makeFlag(ACTION_STATE_IDLE, LEFT) | makeFlag(ACTION_STATE_SWIPE, LEFT);
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            return false; //this method should never be called
+        }
+
+        /* when the user swipes a view, it gets deleted */
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            adapter.onItemDismiss(viewHolder.getAdapterPosition());
+        }
+
+        @Override
+        public float getSwipeThreshold(RecyclerView.ViewHolder viewHolder) {
+            return 0.7f;
+        }
+
+        @Override
+        public float getSwipeEscapeVelocity(float defaultValue) {
+            return defaultValue * 100;
+        }
+
+        @Override
+        public void onChildDraw(Canvas c,
+                                RecyclerView recyclerView,
+                                final RecyclerView.ViewHolder viewHolder,
+                                float dX,
+                                float dY,
+                                int actionState,
+                                boolean isCurrentlyActive) {
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            if (isCurrentlyActive && actionState == ACTION_STATE_SWIPE) {
+                paint.setColor(0xffffffff);
+                if (Build.VERSION.SDK_INT >= 23)
+                    paint.setColor(context.getResources().getColor(R.color.colorAccent, null));
+                View view = viewHolder.itemView;
+
+                // the background rectangle
+                c.drawRect(view.getRight() + dX, view.getTop(), view.getRight(), view.getBottom(), paint);
+
+                // scale the image according to dX
+                int leftCoor = view.getRight() - 50 - deleteIcon.getWidth();
+                int topCoor = view.getTop() + (view.getBottom() - view.getTop() - deleteIcon.getHeight()) / 2;
+                int rightCoor = leftCoor + deleteIcon.getWidth();
+                int bottomCoor = topCoor + deleteIcon.getHeight();
+
+                float scaleThreshold = 250;
+                float scaleFactor = Math.abs(dX) / scaleThreshold;
+
+                float l_scaled = view.getRight() - 50 - deleteIcon.getWidth() * scaleFactor;
+                float t_scaled = view.getTop() + (view.getBottom() - view.getTop() - deleteIcon.getHeight() * scaleFactor) / 2;
+                float r_scaled = leftCoor + deleteIcon.getWidth() * scaleFactor;
+                float b_scaled = topCoor + deleteIcon.getHeight() * scaleFactor;
+
+                //animation from -150 horizontal displacement to
+                //-250 displacement
+                if (dX <= -150 && dX >= -scaleThreshold) {
+                    c.drawBitmap(deleteIcon, null, new Rect((int) l_scaled, (int) t_scaled, (int) r_scaled, (int) b_scaled), paint);
+                } else if (dX < -scaleThreshold) {
+                    c.drawBitmap(deleteIcon, null,
+                            new Rect(leftCoor, topCoor, rightCoor, bottomCoor), paint);
+                }
             }
         }
     }

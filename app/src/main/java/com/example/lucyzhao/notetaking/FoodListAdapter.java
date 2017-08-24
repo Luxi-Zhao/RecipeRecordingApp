@@ -1,13 +1,18 @@
 package com.example.lucyzhao.notetaking;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -16,7 +21,10 @@ import java.util.ArrayList;
 /**
  * Created by LucyZhao on 2016/11/12.
  */
-public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHolder> {
+public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHolder>
+                            implements ItemTouchHelperAdapter{
+
+    private static final String TAG = FoodListAdapter.class.getSimpleName();
 
     private static ArrayList<Food> foodList;
     private Context associatedActivityContext;
@@ -65,6 +73,29 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
         this.notifyDataSetChanged();
     }
 
+    @Override
+    public void onItemMove(RecyclerView.ViewHolder holder, int fromPosition, int toPosition) {}
+
+    @Override
+    public void onItemDismiss(final int position) {
+        /*  1.delete the picture associated */
+        String uriString = foodList.get(position).getImageUriString();
+        Utils.deleteImageOnDevice(Uri.parse(uriString), associatedActivityContext);
+
+        /*  2.remove the ingredient and procedure files from internal
+            storage
+        */
+        if(!Utils.deleteFoodDir(associatedActivityContext, foodList.get(position).getId())){
+            Toast.makeText(associatedActivityContext, "Error: delete failed", Toast.LENGTH_LONG).show();
+        }
+        /*
+            3.remove the swiped item from the adapter and its internal
+            list
+        */
+        foodList.remove(position);
+        notifyItemRemoved(position);
+    }
+
     // inner class to hold a reference to each item of RecyclerView
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
@@ -97,4 +128,5 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
     public int getItemCount() {
         return foodList.size();
     }
+
 }

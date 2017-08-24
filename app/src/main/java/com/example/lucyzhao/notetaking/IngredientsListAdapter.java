@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * Created by LucyZhao on 2017/8/16.
  */
 
-public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsListAdapter.ViewHolder> {
+public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsListAdapter.ViewHolder> implements ItemTouchHelperAdapter{
     private ArrayList<Ingredient> ingredientList;
 
     public IngredientsListAdapter(ArrayList<Ingredient> ingredient_list) {
@@ -75,6 +75,16 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
         return ingredientList.size();
     }
 
+    @Override
+    public void onItemMove(RecyclerView.ViewHolder holder, int fromPosition, int toPosition) {
+
+    }
+
+    @Override
+    public void onItemDismiss(int position) {
+        ingredientList.remove(position);
+        notifyItemRemoved(position);
+    }
 
 
     // inner class to hold a reference to each item of RecyclerView
@@ -84,7 +94,6 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
         public EditText amount;
         public EditText unit;
         public Button edit_ok;
-        public Button edit_delete;
 
         public TextView name_tv;
         public TextView amount_tv;
@@ -103,17 +112,10 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
             amount = (EditText) itemLayoutView.findViewById(R.id.ingredient_amount);
             unit = (EditText) itemLayoutView.findViewById(R.id.ingredient_unit);
             edit_ok = (Button) itemLayoutView.findViewById(R.id.edit_ok);
-            edit_delete = (Button) itemLayoutView.findViewById(R.id.edit_delete);
 
             name_tv = (TextView) itemLayoutView.findViewById(R.id.ingredient_name_tv);
             amount_tv = (TextView) itemLayoutView.findViewById(R.id.ingredient_amount_tv);
             unit_tv = (TextView) itemLayoutView.findViewById(R.id.ingredient_unit_tv);
-
-            /*
-            hides the edit text
-            textview shows by default
-             */
-           // isInEditMode(false);
 
 
             // configures clicking events for recycler view
@@ -143,14 +145,6 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
                 }
             });
 
-            edit_delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Log.v(TAG, "edit delete on click");
-                    ingredientList.remove(getAdapterPosition());
-                    notifyItemRemoved(getAdapterPosition());
-                }
-            });
         }
 
         @Override
@@ -185,7 +179,6 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
             amount.setVisibility(visibility);
             unit.setVisibility(visibility);
             edit_ok.setVisibility(visibility);
-            edit_delete.setVisibility(visibility);
         }
 
         private void setTextViewVisibility(int visibility) {

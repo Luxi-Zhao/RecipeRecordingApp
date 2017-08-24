@@ -4,7 +4,6 @@ package com.example.lucyzhao.notetaking;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -42,9 +41,11 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.util.ArrayList;
 
-import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_DRAG;
 import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_IDLE;
+import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_SWIPE;
 import static android.support.v7.widget.helper.ItemTouchHelper.DOWN;
+import static android.support.v7.widget.helper.ItemTouchHelper.LEFT;
+import static android.support.v7.widget.helper.ItemTouchHelper.RIGHT;
 import static android.support.v7.widget.helper.ItemTouchHelper.UP;
 import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
 
@@ -131,8 +132,6 @@ public class RecipePageActivity extends AppCompatActivity {
                     .into(foodPic);
         }
 
-        //TODO fragment not showing, either because it's not in the right
-        //TODO container or the foodPic does not exist
         foodPic.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -173,7 +172,7 @@ public class RecipePageActivity extends AppCompatActivity {
         prRecyclerView.setAdapter(prListAdapter);
 
         ItemTouchHelper.Callback callback =
-                new mItemTouchHelperCallback(prListAdapter);
+                new mProcedureTouchHelperCallback(prListAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(prRecyclerView);
 
@@ -229,6 +228,9 @@ public class RecipePageActivity extends AppCompatActivity {
         ingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         ingRecyclerView.setAdapter(ingListAdapter);
+
+        new ItemTouchHelper(new mIngTouchHelperCallback(ingListAdapter))
+                .attachToRecyclerView(ingRecyclerView);
 
         /* --------- setting up add ingredient button ---------------*/
         addIngredientBtn = (ToggleButton) findViewById(R.id.add_ingredient_button);
@@ -753,10 +755,10 @@ public class RecipePageActivity extends AppCompatActivity {
 
     }
 
-    private static class mItemTouchHelperCallback extends ItemTouchHelper.Callback {
+    private static class mProcedureTouchHelperCallback extends ItemTouchHelper.Callback {
+        private final ItemTouchHelperAdapter mAdapter;
 
-        ItemTouchHelperAdapter mAdapter;
-        mItemTouchHelperCallback(ItemTouchHelperAdapter adapter){
+        mProcedureTouchHelperCallback(ItemTouchHelperAdapter adapter){
             this.mAdapter = adapter;
         }
 
@@ -767,7 +769,7 @@ public class RecipePageActivity extends AppCompatActivity {
 
         @Override
         public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            return makeFlag(ACTION_STATE_IDLE,  UP | DOWN) | makeFlag(ACTION_STATE_DRAG, UP | DOWN);
+            return makeMovementFlags( UP | DOWN, LEFT | RIGHT);
         }
 
 
@@ -779,8 +781,30 @@ public class RecipePageActivity extends AppCompatActivity {
 
         @Override
         public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-
+            mAdapter.onItemDismiss(viewHolder.getAdapterPosition());
         }
     }
 
+    private static class mIngTouchHelperCallback extends ItemTouchHelper.Callback {
+        private final ItemTouchHelperAdapter adapter;
+
+        mIngTouchHelperCallback(ItemTouchHelperAdapter adapter){
+            this.adapter = adapter;
+        }
+
+        @Override
+        public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+            return makeFlag(ACTION_STATE_IDLE, LEFT | RIGHT) | makeFlag(ACTION_STATE_SWIPE, LEFT | RIGHT);
+        }
+
+        @Override
+        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            return false;
+        }
+
+        @Override
+        public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+            adapter.onItemDismiss(viewHolder.getAdapterPosition());
+        }
+    }
 }

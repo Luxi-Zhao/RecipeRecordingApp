@@ -17,7 +17,7 @@
 
         <EditText
             android:id="@+id/ingredient_name"
-            android:layout_width="120dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
@@ -45,7 +45,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginEnd="10dp"
-            android:layout_toEndOf="@+id/ingredient_name"
             android:layout_toStartOf="@+id/ingredient_unit"
             android:backgroundTint="@color/colorAccent"
             android:hint=""
@@ -58,16 +57,9 @@
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:layout_toStartOf="@+id/edit_delete"
+            android:layout_alignParentEnd="true"
             android:text="ok" />
 
-        <Button
-            android:id="@+id/edit_delete"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:text="del" />
 
         <TextView
             android:id="@+id/ingredient_name_tv"

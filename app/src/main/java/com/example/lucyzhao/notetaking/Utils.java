@@ -143,6 +143,21 @@ public class Utils {
     }
 
     /**
+     * Delete the image saved in the gallery
+     * @param uri of the image
+     * @param context current context
+     */
+    public static void deleteImageOnDevice(Uri uri, Context context){
+        Log.v(TAG, "deleting file" + uri.getPath());
+        if (!uri.getPath().equals(Utils.DEFAULT_PICTURE_URI_PATH)
+                && !uri.toString().startsWith("file:")){
+            Log.v(TAG, "uri.getPath() is {" + uri.getPath() + "}");
+            Log.v(TAG, "default picture uri path is {" + Utils.DEFAULT_PICTURE_URI_PATH + "}");
+            context.getContentResolver().delete(uri, null, null);
+        }
+    }
+
+    /**
      * Delete an entire food folder
      * @param context
      * @param foodId

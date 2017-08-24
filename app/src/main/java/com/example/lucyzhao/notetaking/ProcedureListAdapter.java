@@ -89,14 +89,16 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
     }
 
     @Override
-    public void onItemDismiss(int position) { }
+    public void onItemDismiss(int position) {
+        procedureList.remove(position);
+        notifyItemRemoved(position);
+    }
 
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
         CardView pCardView;
         TextView pText;
         EditText pEditText;
         Button okButton;
-        Button deleteButton;
 
         ImageView pImage;
 
@@ -108,7 +110,6 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
             pText = (TextView) itemLayoutView.findViewById(R.id.procedure_text);
             pEditText = (EditText) itemLayoutView.findViewById(R.id.procedure_edit_text);
             okButton = (Button) itemLayoutView.findViewById(R.id.procedure_edit_ok);
-            deleteButton = (Button) itemLayoutView.findViewById(R.id.procedure_edit_delete);
             pImage = (ImageView) itemLayoutView.findViewById(R.id.procedure_image);
 
             //isInEditMode(false);
@@ -127,13 +128,13 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
                 }
             });
 
-            deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    procedureList.remove(getAdapterPosition());
-                    notifyItemRemoved(getAdapterPosition());
-                }
-            });
+//            deleteButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    procedureList.remove(getAdapterPosition());
+//                    notifyItemRemoved(getAdapterPosition());
+//                }
+//            });
 
             itemLayoutView.setClickable(true);
             itemLayoutView.setOnClickListener(this);
@@ -168,33 +169,9 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
         private void isInEditMode(boolean inEditMode){
             if(isPic){
                 pImage.setVisibility(View.VISIBLE);
-                if(inEditMode){
-                    // 1. Instantiate an AlertDialog.Builder with its constructor
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(pImage.getContext());
-
-                    // 2. set the dialog characteristics
-                    builder.setMessage("delete picture?")
-                            .setTitle("warning")
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener(){
-                        public void onClick(DialogInterface dialog, int id) {
-                            procedureList.remove(getAdapterPosition());
-                            notifyItemRemoved(getAdapterPosition());
-                        }
-                    })
-                            .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-
-                    // 3. Get the AlertDialog from create()
-                    builder.create().show();
-                }
                 pText.setVisibility(View.GONE);
                 pEditText.setVisibility(View.GONE);
                 okButton.setVisibility(View.GONE);
-                deleteButton.setVisibility(View.GONE);
             }
             else{
                 pImage.setVisibility(View.GONE);
@@ -203,13 +180,11 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
                     pEditText.setText(pText.getText().toString());
                     pEditText.setVisibility(View.VISIBLE);
                     okButton.setVisibility(View.VISIBLE);
-                    deleteButton.setVisibility(View.VISIBLE);
                 }
                 else{
                     pText.setVisibility(View.VISIBLE);
                     pEditText.setVisibility(View.GONE);
                     okButton.setVisibility(View.GONE);
-                    deleteButton.setVisibility(View.GONE);
                 }
             }
         }
