@@ -1,4 +1,4 @@
-package com.example.lucyzhao.notetaking;
+package com.example.lucyzhao.notetaking.ingredient;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -10,6 +10,9 @@ import android.widget.EditText;
 
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.lucyzhao.notetaking.ItemTouchHelperAdapter;
+import com.example.lucyzhao.notetaking.R;
 
 import java.util.ArrayList;
 

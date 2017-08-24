@@ -36,6 +36,9 @@ import android.widget.ToggleButton;
 
 
 import com.bumptech.glide.Glide;
+import com.example.lucyzhao.notetaking.food.Food;
+import com.example.lucyzhao.notetaking.ingredient.Ingredient;
+import com.example.lucyzhao.notetaking.ingredient.IngredientsListAdapter;
 
 
 import java.io.File;

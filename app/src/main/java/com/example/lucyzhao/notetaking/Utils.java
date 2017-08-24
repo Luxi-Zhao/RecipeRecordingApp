@@ -7,8 +7,10 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
-import android.util.DisplayMetrics;
 import android.util.Log;
+
+import com.example.lucyzhao.notetaking.food.Food;
+import com.example.lucyzhao.notetaking.ingredient.Ingredient;
 
 import java.io.File;
 import java.io.FileInputStream;

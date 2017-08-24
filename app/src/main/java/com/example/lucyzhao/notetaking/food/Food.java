@@ -1,10 +1,12 @@
-package com.example.lucyzhao.notetaking;
+package com.example.lucyzhao.notetaking.food;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+
+import com.example.lucyzhao.notetaking.Utils;
 
 import java.io.IOException;
 import java.io.Serializable;

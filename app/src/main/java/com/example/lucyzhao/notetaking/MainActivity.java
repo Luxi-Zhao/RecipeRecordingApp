@@ -33,6 +33,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.lucyzhao.notetaking.food.Food;
+import com.example.lucyzhao.notetaking.food.FoodListAdapter;
 
 import java.util.ArrayList;
 

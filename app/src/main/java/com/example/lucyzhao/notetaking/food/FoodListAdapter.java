@@ -1,4 +1,4 @@
-package com.example.lucyzhao.notetaking;
+package com.example.lucyzhao.notetaking.food;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +12,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.lucyzhao.notetaking.ItemTouchHelperAdapter;
+import com.example.lucyzhao.notetaking.R;
+import com.example.lucyzhao.notetaking.RecipePageActivity;
+import com.example.lucyzhao.notetaking.Utils;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.example.lucyzhao.notetaking;
+package com.example.lucyzhao.notetaking.ingredient;
 
 import java.io.Serializable;
 
