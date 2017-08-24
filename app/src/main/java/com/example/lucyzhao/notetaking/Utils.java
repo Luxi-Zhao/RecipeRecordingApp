@@ -1,13 +1,8 @@
 package com.example.lucyzhao.notetaking;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -25,7 +20,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
-import static java.security.AccessController.getContext;
+
 
 /**
  * Created by LucyZhao on 2017/8/15.
@@ -83,7 +78,6 @@ public class Utils {
     }
 
     /**
-     *
      * @param c
      * @param list
      * @param foldername
@@ -93,11 +87,11 @@ public class Utils {
         try {
             Log.v(TAG, "saving list");
             File file = new File(c.getFilesDir().getPath() + "/" + foldername + "/" + filename);
-            if(!file.exists()){
+            if (!file.exists()) {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
             }
-            FileOutputStream fos = new FileOutputStream(file,false);
+            FileOutputStream fos = new FileOutputStream(file, false);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
             objectOutputStream.writeObject(list);
             objectOutputStream.close();
@@ -113,7 +107,7 @@ public class Utils {
         Log.v(TAG, "getting list");
         ArrayList list = null;
         try {
-            FileInputStream fis = new FileInputStream (
+            FileInputStream fis = new FileInputStream(
                     new File(c.getFilesDir().getPath() + "/" + foldername + "/" + filename));
             ObjectInputStream objectInputStream = new ObjectInputStream(fis);
             list = (ArrayList) objectInputStream.readObject();
@@ -144,13 +138,14 @@ public class Utils {
 
     /**
      * Delete the image saved in the gallery
-     * @param uri of the image
+     *
+     * @param uri     of the image
      * @param context current context
      */
-    public static void deleteImageOnDevice(Uri uri, Context context){
+    public static void deleteImageOnDevice(Uri uri, Context context) {
         Log.v(TAG, "deleting file" + uri.getPath());
         if (!uri.getPath().equals(Utils.DEFAULT_PICTURE_URI_PATH)
-                && !uri.toString().startsWith("file:")){
+                && !uri.toString().startsWith("file:")) {
             Log.v(TAG, "uri.getPath() is {" + uri.getPath() + "}");
             Log.v(TAG, "default picture uri path is {" + Utils.DEFAULT_PICTURE_URI_PATH + "}");
             context.getContentResolver().delete(uri, null, null);
@@ -159,11 +154,12 @@ public class Utils {
 
     /**
      * Delete an entire food folder
+     *
      * @param context
      * @param foodId
      * @return
      */
-    public static boolean deleteFoodDir(Context context, int foodId){
+    public static boolean deleteFoodDir(Context context, int foodId) {
 
         File dir = new File(context.getFilesDir() + "/" + foodId);
         Log.v(TAG, "dir to delete is: " + dir.getAbsolutePath());
@@ -177,6 +173,7 @@ public class Utils {
     /**
      * Source:
      * https://stackoverflow.com/questions/13410949/how-to-delete-folder-from-internal-storage-in-android
+     *
      * @param fileOrDirectory
      */
     public static void deleteRecursive(File fileOrDirectory) {
@@ -191,17 +188,12 @@ public class Utils {
         fileOrDirectory.delete();
     }
 
-    public static int dpToPx(Context c, int dp) {
-        DisplayMetrics displayMetrics = c.getResources().getDisplayMetrics();
-        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-    }
-
 
     /**
      * give imageUri another value instead of Uri.fromFile(photoFile) because
      * file: // can no longer be used
      */
-    public static Uri createUri(DialogFragment fragment){
+    public static Uri createUri(DialogFragment fragment) {
         ContentValues values = new ContentValues(1);
         values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
         //insert values into a table at EXTERNAL_CONTENT_URI and get the URI of the newly
@@ -212,11 +204,12 @@ public class Utils {
 
     /**
      * checks if a procedure text is a uri
+     *
      * @param str
      * @return
      */
-    public static boolean isUri(String str){
-        if(str.startsWith("file") || str.startsWith("content"))
+    public static boolean isUri(String str) {
+        if (str.startsWith("file") || str.startsWith("content"))
             return true;
         else return false;
     }

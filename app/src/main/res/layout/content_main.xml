@@ -9,10 +9,10 @@
     tools:showIn="@layout/activity_main">
 
     <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
         android:id="@+id/recyclerView"
-        android:overScrollMode="never"
-        android:layout_height="match_parent"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton3"

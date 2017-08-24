@@ -14,12 +14,12 @@ import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
 /**
  * Created by LucyZhao on 2016/10/29.
  */
- public class Food implements Serializable{
+public class Food implements Serializable {
     private String title;
     private String imageUriString;
     private final int id;
 
-    public Food( String title, String imageUriString, Context context ) {
+    public Food(String title, String imageUriString, Context context) {
         this.title = title;
         this.imageUriString = imageUriString;
 
@@ -29,7 +29,7 @@ import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
         Utils.setLastFoodId(context, this.id);
     }
 
-    public String getTitle(){
+    public String getTitle() {
         return title;
     }
 
@@ -37,12 +37,16 @@ import static com.example.lucyzhao.notetaking.Utils.DEFAULT_PICTURE_PATH;
         this.title = title;
     }
 
-    public String getImageUriString() { return imageUriString; }
+    public String getImageUriString() {
+        return imageUriString;
+    }
 
     public void setImageUriString(String imageUriString) {
         this.imageUriString = imageUriString;
     }
 
-    public int getId() { return id; }
+    public int getId() {
+        return id;
+    }
 
 }

@@ -510,7 +510,6 @@ public class RecipePageActivity extends AppCompatActivity {
                     .centerCrop()
                     .into(((RecipePageActivity) getActivity()).foodPic);
 
-            // dismiss this fragment
             dismiss();
         }
 
@@ -758,7 +757,7 @@ public class RecipePageActivity extends AppCompatActivity {
     private static class mProcedureTouchHelperCallback extends ItemTouchHelper.Callback {
         private final ItemTouchHelperAdapter mAdapter;
 
-        mProcedureTouchHelperCallback(ItemTouchHelperAdapter adapter){
+        mProcedureTouchHelperCallback(ItemTouchHelperAdapter adapter) {
             this.mAdapter = adapter;
         }
 
@@ -769,7 +768,7 @@ public class RecipePageActivity extends AppCompatActivity {
 
         @Override
         public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            return makeMovementFlags( UP | DOWN, LEFT | RIGHT);
+            return makeMovementFlags(UP | DOWN, LEFT | RIGHT);
         }
 
 
@@ -788,7 +787,7 @@ public class RecipePageActivity extends AppCompatActivity {
     private static class mIngTouchHelperCallback extends ItemTouchHelper.Callback {
         private final ItemTouchHelperAdapter adapter;
 
-        mIngTouchHelperCallback(ItemTouchHelperAdapter adapter){
+        mIngTouchHelperCallback(ItemTouchHelperAdapter adapter) {
             this.adapter = adapter;
         }
 

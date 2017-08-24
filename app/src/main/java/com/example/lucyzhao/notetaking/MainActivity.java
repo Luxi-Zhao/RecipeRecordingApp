@@ -3,15 +3,12 @@ package com.example.lucyzhao.notetaking;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -37,7 +34,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_IDLE;
@@ -184,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
                     //already exits
                     if (!((MainActivity) getActivity()).onDialogPositiveClick()) {
                         dismiss();
-                        //dismissDialog();
                     }
                 }
             });
@@ -193,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Utils.deleteImageOnDevice(((MainActivity) getActivity()).imageUri, getActivity());
                     dismiss();
-                    //dismissDialog();
                 }
             });
 
@@ -246,7 +240,6 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            Log.v("tag", "ENTERING ON ACTIVITY RESULT");
             super.onActivityResult(requestCode, resultCode, data);
             if (requestCode == TAKE_PICTURE && resultCode == Activity.RESULT_OK) {
                 setPicturePreview();
@@ -258,7 +251,6 @@ public class MainActivity extends AppCompatActivity {
                         .centerCrop()
                         .into(picPreview);
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                Log.v(TAG, "result cancelled");
                 ((MainActivity) getActivity()).imageUri = Uri.parse(Utils.DEFAULT_PICTURE_PATH);
             }
 
@@ -284,8 +276,6 @@ public class MainActivity extends AppCompatActivity {
          * @param requestCode
          */
         private void requestUserPermission(String devicePermission, int requestCode) {
-            Log.v(TAG, "entering requesting user permission" + devicePermission);
-
             if (ContextCompat.checkSelfPermission(getContext(),
                     devicePermission)
                     == PackageManager.PERMISSION_DENIED) {
@@ -324,8 +314,6 @@ public class MainActivity extends AppCompatActivity {
                         takePicture();
                     } else {
                         Log.v("tag", "camera access permission denied");
-                        // permission denied, boo! Disable the
-                        // functionality that depends on this permission.
                     }
                     return;
                 }
@@ -342,8 +330,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     return;
                 }
-                // other 'case' lines to check for other
-                // permissions this app might request
             }
         }
     }
@@ -351,7 +337,6 @@ public class MainActivity extends AppCompatActivity {
     private static class mFoodTouchHelperCallback extends ItemTouchHelper.Callback {
 
         private Paint paint = new Paint();
-        private Paint textPaint = new Paint();
         private final Bitmap deleteIcon;
         private final Context context;
 

@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * Created by LucyZhao on 2017/8/16.
  */
 
-public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsListAdapter.ViewHolder> implements ItemTouchHelperAdapter{
+public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsListAdapter.ViewHolder> implements ItemTouchHelperAdapter {
     private ArrayList<Ingredient> ingredientList;
 
     public IngredientsListAdapter(ArrayList<Ingredient> ingredient_list) {
@@ -54,10 +54,9 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
 
         float amount = ingredientList.get(position).getAmount();
         String amountString;
-        if(Math.floor(amount) == amount) {
-            amountString = Integer.toString((int)amount);
-        }
-        else {
+        if (Math.floor(amount) == amount) {
+            amountString = Integer.toString((int) amount);
+        } else {
             amountString = Float.toString(amount);
         }
         viewHolder.name_tv.setText(ingredientList.get(position).getName());
@@ -132,11 +131,10 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
                     String new_name = name.getText().toString();
                     String new_amount_str = amount.getText().toString();
                     String new_unit = unit.getText().toString();
-                    if (new_name.isEmpty() || new_amount_str.isEmpty()){
+                    if (new_name.isEmpty() || new_amount_str.isEmpty()) {
                         Toast.makeText(itemLayoutView.getContext(),
                                 "name and amount cannot be empty", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
+                    } else {
                         Ingredient new_ing = new Ingredient(new_name, Float.parseFloat(new_amount_str), new_unit);
                         ingredientList.remove(getAdapterPosition());
                         ingredientList.add(getAdapterPosition(), new_ing);

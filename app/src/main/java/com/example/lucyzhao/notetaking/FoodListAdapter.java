@@ -1,12 +1,9 @@
 package com.example.lucyzhao.notetaking;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,9 +19,8 @@ import java.util.ArrayList;
  * Created by LucyZhao on 2016/11/12.
  */
 public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHolder>
-                            implements ItemTouchHelperAdapter{
+        implements ItemTouchHelperAdapter {
 
-    private static final String TAG = FoodListAdapter.class.getSimpleName();
 
     private static ArrayList<Food> foodList;
     private Context associatedActivityContext;
@@ -61,20 +57,22 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
                 .load(foodList.get(position).getImageUriString())
                 .centerCrop()
                 .into(viewHolder.foodImage);    //use Glide library for efficient bitmap using
-                                                //prevents out of memory error
+        //prevents out of memory error
     }
 
     /**
      * Replace the inner list with a new list
+     *
      * @param newFoodList
      */
-    public void updateInnerList(ArrayList<Food> newFoodList){
+    public void updateInnerList(ArrayList<Food> newFoodList) {
         foodList = newFoodList;
         this.notifyDataSetChanged();
     }
 
     @Override
-    public void onItemMove(RecyclerView.ViewHolder holder, int fromPosition, int toPosition) {}
+    public void onItemMove(RecyclerView.ViewHolder holder, int fromPosition, int toPosition) {
+    }
 
     @Override
     public void onItemDismiss(final int position) {
@@ -85,7 +83,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
         /*  2.remove the ingredient and procedure files from internal
             storage
         */
-        if(!Utils.deleteFoodDir(associatedActivityContext, foodList.get(position).getId())){
+        if (!Utils.deleteFoodDir(associatedActivityContext, foodList.get(position).getId())) {
             Toast.makeText(associatedActivityContext, "Error: delete failed", Toast.LENGTH_LONG).show();
         }
         /*
@@ -97,11 +95,12 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
     }
 
     // inner class to hold a reference to each item of RecyclerView
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView title;
         public ImageView foodImage;
         private final Context context;
+
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
             title = (TextView) itemLayoutView.findViewById(R.id.title);

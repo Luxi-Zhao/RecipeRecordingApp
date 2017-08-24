@@ -1,8 +1,5 @@
 package com.example.lucyzhao.notetaking;
 
-import android.content.DialogInterface;
-import android.preference.DialogPreference;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -25,7 +22,7 @@ import java.util.Collections;
  */
 
 public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdapter.ViewHolder>
-                                                                implements ItemTouchHelperAdapter {
+        implements ItemTouchHelperAdapter {
     private ArrayList<String> procedureList;
     private static final String TAG = ProcedureListAdapter.class.getSimpleName();
 
@@ -47,14 +44,13 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String text = procedureList.get(position);
-        if(Utils.isUri(text)){
+        if (Utils.isUri(text)) {
             Glide.with(holder.pImage.getContext())
                     .load(text)
                     .centerCrop()
                     .into(holder.pImage);
             holder.setIsPic(true);
-        }
-        else{
+        } else {
             holder.setIsPic(false);
             holder.pText.setText(procedureList.get(position));
         }
@@ -68,6 +64,7 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
 
     /**
      * Source: https://medium.com/@ipaulpro/drag-and-swipe-with-recyclerview-b9456d2b1aaf
+     *
      * @param fromPosition
      * @param toPosition
      */
@@ -75,13 +72,12 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
     public void onItemMove(RecyclerView.ViewHolder holder, int fromPosition, int toPosition) {
         ((ProcedureListAdapter.ViewHolder) holder).isInEditMode(false);
 
-        if(fromPosition > toPosition){
-            for(int i = fromPosition; i > toPosition; i--){
+        if (fromPosition > toPosition) {
+            for (int i = fromPosition; i > toPosition; i--) {
                 Collections.swap(procedureList, i, i - 1);
             }
-        }
-        else{
-            for(int i = fromPosition; i < toPosition; i++){
+        } else {
+            for (int i = fromPosition; i < toPosition; i++) {
                 Collections.swap(procedureList, i, i + 1);
             }
         }
@@ -94,7 +90,7 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
         notifyItemRemoved(position);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         CardView pCardView;
         TextView pText;
         EditText pEditText;
@@ -104,7 +100,7 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
 
         private boolean isPic = false;
 
-        public ViewHolder(View itemLayoutView){
+        public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
             pCardView = (CardView) itemLayoutView.findViewById(R.id.procedure_card_view);
             pText = (TextView) itemLayoutView.findViewById(R.id.procedure_text);
@@ -112,15 +108,12 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
             okButton = (Button) itemLayoutView.findViewById(R.id.procedure_edit_ok);
             pImage = (ImageView) itemLayoutView.findViewById(R.id.procedure_image);
 
-            //isInEditMode(false);
-
             okButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(pEditText.getText().toString().isEmpty()){
+                    if (pEditText.getText().toString().isEmpty()) {
                         Toast.makeText(v.getContext(), "procedure cannot be empty", Toast.LENGTH_SHORT).show();
-                    }
-                    else {
+                    } else {
                         procedureList.remove(getAdapterPosition());
                         procedureList.add(getAdapterPosition(), pEditText.getText().toString());
                         notifyItemChanged(getAdapterPosition());
@@ -128,26 +121,15 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
                 }
             });
 
-//            deleteButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    procedureList.remove(getAdapterPosition());
-//                    notifyItemRemoved(getAdapterPosition());
-//                }
-//            });
-
             itemLayoutView.setClickable(true);
             itemLayoutView.setOnClickListener(this);
             itemLayoutView.setOnLongClickListener(this);
         }
 
-        public void setIsPic(boolean isPic){
+        public void setIsPic(boolean isPic) {
             this.isPic = isPic;
         }
 
-        public boolean getIsPic() {
-            return isPic;
-        }
 
         @Override
         public void onClick(View v) {
@@ -164,24 +146,23 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
         /**
          * Helper method that designates what the app should do if
          * the user wishes to edit a procedure item
+         *
          * @param inEditMode
          */
-        private void isInEditMode(boolean inEditMode){
-            if(isPic){
+        private void isInEditMode(boolean inEditMode) {
+            if (isPic) {
                 pImage.setVisibility(View.VISIBLE);
                 pText.setVisibility(View.GONE);
                 pEditText.setVisibility(View.GONE);
                 okButton.setVisibility(View.GONE);
-            }
-            else{
+            } else {
                 pImage.setVisibility(View.GONE);
-                if(inEditMode){
+                if (inEditMode) {
                     pText.setVisibility(View.INVISIBLE);
                     pEditText.setText(pText.getText().toString());
                     pEditText.setVisibility(View.VISIBLE);
                     okButton.setVisibility(View.VISIBLE);
-                }
-                else{
+                } else {
                     pText.setVisibility(View.VISIBLE);
                     pEditText.setVisibility(View.GONE);
                     okButton.setVisibility(View.GONE);
