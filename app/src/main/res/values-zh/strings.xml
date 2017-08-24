@@ -3,7 +3,7 @@
     <string name="app_name">食谱记录簿</string>
     <string name="action_settings">Settings</string>
 
-    <string name="title_activity_main">食谱记录本</string>
+    <string name="title_activity_main">食谱记录簿</string>
     <string name="delete_failed_error">删除出错了:(</string>
     <string name="recipe_exists">食谱已存在</string>
     <string name="procedure_empty">不能为空</string>
