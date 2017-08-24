@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/colorAccent"
-                android:hint="enter text"
+                android:hint="@string/enter_text"
                 android:inputType="text"
                 android:textSize="20sp" />
 
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:text="ok" />
+            android:text="@string/ok" />
 
     </RelativeLayout>
 

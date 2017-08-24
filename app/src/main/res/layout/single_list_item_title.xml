@@ -32,7 +32,7 @@
             android:layout_toEndOf="@+id/foodpicture"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Title"
+            android:text=""
             android:textSize="30dp" />
     </RelativeLayout>
 

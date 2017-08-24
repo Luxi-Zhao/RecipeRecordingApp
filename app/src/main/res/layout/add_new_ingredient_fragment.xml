@@ -12,7 +12,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="10dp"
         android:layout_toStartOf="@+id/new_amount"
-        android:hint="name"
+        android:hint="@string/name"
         android:text="" />
 
     <EditText
@@ -22,7 +22,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginEnd="10dp"
         android:layout_toStartOf="@+id/ok_button"
-        android:hint="unit"
+        android:hint="@string/unit"
         android:text="" />
 
     <Button
@@ -31,7 +31,7 @@
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:text="ok" />
+        android:text="@string/ok" />
 
     <EditText
         android:id="@+id/new_amount"

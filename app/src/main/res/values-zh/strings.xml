@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">食谱记录簿</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="title_activity_main">食谱记录本</string>
+    <string name="delete_failed_error">删除出错了:(</string>
+    <string name="recipe_exists">食谱已存在</string>
+    <string name="procedure_empty">不能为空</string>
+    <string name="procedure_duplicate">步骤重复</string>
+    <string name="name_amount_empty">食材和数量不能为空</string>
+
+    <string name="name">食材</string>
+    <string name="unit">单位</string>
+    <string name="ok">确认</string>
+    <string name="cancel">取消</string>
+    <string name="add">+</string>
+
+    <string name="add_picture">添加图片</string>
+    <string name="add_procedure">添加文字</string>
+
+    <string name="enter_recipe_name">食材名称</string>
+    <string name="enter_text">输入文字</string>
+    <string name="camera">相机</string>
+    <string name="gallery">相册</string>
+
+    <string name="ingredients">配料</string>
+    <string name="procedure">步骤</string>
+</resources>

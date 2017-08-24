@@ -136,7 +136,7 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
                     String new_unit = unit.getText().toString();
                     if (new_name.isEmpty() || new_amount_str.isEmpty()) {
                         Toast.makeText(itemLayoutView.getContext(),
-                                "name and amount cannot be empty", Toast.LENGTH_SHORT).show();
+                                R.string.name_amount_empty, Toast.LENGTH_SHORT).show();
                     } else {
                         Ingredient new_ing = new Ingredient(new_name, Float.parseFloat(new_amount_str), new_unit);
                         ingredientList.remove(getAdapterPosition());

@@ -12,7 +12,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:hint="enter recipe name"
+        android:hint="@string/enter_recipe_name"
         android:textSize="18sp" />
 
     <LinearLayout
@@ -70,7 +70,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="30dp"
-            android:text="OK"
+            android:text="@string/ok"
             android:textSize="20sp" />
 
         <Button
@@ -79,7 +79,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="30dp"
-            android:text="CANCEL"
+            android:text="@string/cancel"
             android:textSize="20sp" />
 
     </LinearLayout>

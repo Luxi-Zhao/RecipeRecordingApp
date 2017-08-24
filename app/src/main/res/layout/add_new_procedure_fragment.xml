@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/line"
         android:gravity="center"
-        android:hint="enter text"
+        android:hint="@string/enter_text"
         android:padding="10dp"
         android:textSize="20sp" />
 
@@ -19,5 +19,5 @@
         style="@android:style/Widget.Holo.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="OK" />
+        android:text="@string/ok" />
 </LinearLayout>

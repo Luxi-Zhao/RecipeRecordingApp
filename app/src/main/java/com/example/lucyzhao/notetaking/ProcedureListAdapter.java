@@ -112,7 +112,7 @@ public class ProcedureListAdapter extends RecyclerView.Adapter<ProcedureListAdap
                 @Override
                 public void onClick(View v) {
                     if (pEditText.getText().toString().isEmpty()) {
-                        Toast.makeText(v.getContext(), "procedure cannot be empty", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(v.getContext(), R.string.procedure_empty, Toast.LENGTH_SHORT).show();
                     } else {
                         procedureList.remove(getAdapterPosition());
                         procedureList.add(getAdapterPosition(), pEditText.getText().toString());

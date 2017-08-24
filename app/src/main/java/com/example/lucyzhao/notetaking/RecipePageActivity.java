@@ -298,7 +298,7 @@ public class RecipePageActivity extends AppCompatActivity {
             prListAdapter.notifyItemInserted(prListAdapter.getItemCount() - 1);
             Log.v(TAG, "notified item inserted at pos: " + (prListAdapter.getItemCount() - 1));
         } else {
-            Toast.makeText(getApplicationContext(), "duplicate procedure", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.procedure_duplicate, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -375,7 +375,7 @@ public class RecipePageActivity extends AppCompatActivity {
                     String ingUnit = unit.getText().toString();
                     if (ingName.isEmpty() || ingAmountStr.isEmpty()) {
                         Toast.makeText(getContext(),
-                                "name and amount cannot be empty", Toast.LENGTH_SHORT).show();
+                                R.string.name_amount_empty, Toast.LENGTH_SHORT).show();
                     } else {
                         Ingredient ing = new Ingredient(ingName, Float.parseFloat(ingAmountStr), ingUnit);
                         ((RecipePageActivity) getActivity()).addNewIngredient(ing);
@@ -404,7 +404,7 @@ public class RecipePageActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     if (text.getText().toString().isEmpty()) {
-                        Toast.makeText(v.getContext(), "procedure cannot be empty", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(v.getContext(), R.string.procedure_empty, Toast.LENGTH_SHORT).show();
                     } else {
                         ((RecipePageActivity) getActivity()).addNewProcedure(text.getText().toString());
                         ((RecipePageActivity) getActivity()).addProcedureBtn.toggle();

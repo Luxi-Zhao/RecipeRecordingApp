@@ -6,4 +6,27 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_recipe_page">RecipePageActivity</string>
     <string name="title_activity_main">recipe log</string>
+    <string name="delete_failed_error">Error: delete failed</string>
+    <string name="recipe_exists">recipe exists, change to another name</string>
+    <string name="procedure_empty">procedure cannot be empty</string>
+    <string name="procedure_duplicate">duplicate procedure</string>
+    <string name="name_amount_empty">name and amount cannot be empty</string>
+
+    <string name="name">name</string>
+    <string name="unit">unit</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="add">ADD</string>
+
+    <string name="add_picture">ADD PICTURE</string>
+    <string name="add_procedure">ADD DESCRIPTION</string>
+
+    <string name="enter_recipe_name">enter recipe name</string>
+    <string name="enter_text">enter text</string>
+    <string name="camera">camera</string>
+    <string name="gallery">gallery</string>
+
+    <string name="ingredients">INGREDIENTS</string>
+    <string name="procedure">PROCEDURE</string>
+
 </resources>

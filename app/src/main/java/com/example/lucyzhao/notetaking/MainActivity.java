@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         for (Food food : foodList) {
             Log.w("food is ", food.getTitle());
             if (food.getTitle().equals(newNoteName.getText().toString())) {
-                Toast.makeText(getApplicationContext(), "recipe exists, change name", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.recipe_exists, Toast.LENGTH_SHORT).show();
                 nameExists = true;
                 break;
             }
@@ -137,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
         if (!nameExists) {
             foodList.add(new Food(newNoteName.getText().toString(), imageUri.toString(), this));
             foodListAdapter.notifyItemInserted(foodListAdapter.getItemCount() - 1);
-            Toast.makeText(getApplicationContext(), "created!", Toast.LENGTH_SHORT).show();
         }
         return nameExists;
     }
@@ -204,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
             galleryButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    openGallery(); //TODO test valid
+                    openGallery();
                 }
             });
 

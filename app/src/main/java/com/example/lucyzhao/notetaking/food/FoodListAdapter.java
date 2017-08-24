@@ -88,7 +88,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.ViewHo
             storage
         */
         if (!Utils.deleteFoodDir(associatedActivityContext, foodList.get(position).getId())) {
-            Toast.makeText(associatedActivityContext, "Error: delete failed", Toast.LENGTH_LONG).show();
+            Toast.makeText(associatedActivityContext, R.string.delete_failed_error, Toast.LENGTH_LONG).show();
         }
         /*
             3.remove the swiped item from the adapter and its internal
